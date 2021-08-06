@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="UTF-8">
+        <title>IELTS単語(10秒で強制的に次の問題へ)</title>
+    </head>
+    <body>
+
+        <h1>単語クイズ</h1>
+        <hr>
+        <h2>出題範囲</h2>
+
+        <input id = "startNo" type="number" size="10">start</input>
+        <input id = "endNo" type="number" size="10">end</input>
+        <input id = "n_choices" type="number" size="10">choices</input>
+        <input id = "post_data" type="button" onclick="test_post()" value="post">
+
+        <h2>問題</h2>
+        <div id="text_q"></div>
+        <h2>選択</h2>
+        <div id="text_s"></div>
+        <h2>解答</h2>
+        <div id="text_a"></div>
+
+        <script type="text/javascript">
+                /** startNoとendNoの設定 */
+                const startbox = document.getElementById("startNo");
+                startbox.value = 1;
+　　　　　　　　　 var startNo = parseInt(startbox.value);
+
+                const endbox = document.getElementById("endNo");
+                endbox.value = 10;
+                var endNo = parseInt(endbox.value);  
+
+                const choicebox = document.getElementById("n_choices");
+                choicebox.value = 8;
+                var  n_choices = parseInt(choicebox.value); 
+                 
+
+                function generateQuestions(){
+                    
+                    let request = new XMLHttpRequest();
+                    request.open('GET', 'https://script.google.com/macros/s/AKfycbzS8Sf3N4zRfXcNWNzJC-cq816Bc6wGkd_zIQLNnkt6NiQJixr8uJVQrpz-T4PR5Ayz0Q/exec', false);
+                    request.send(null);
+
+                    
+                    if (request.status == 200){
+                        var data = JSON.parse(request.responseText);
+                        console.log(data.length);
+                        console.log(data);
+
+
+
+                        console.log("====================");
+                        console.log(startNo);
+                        console.log(endNo);
+                        console.log(endNo-startNo+1)
+                        
+                        /** 重複チェック用配列 */
+                        var randoms = [startNo - 1];
+
+                        var q = [];
+                        
+                        
+                        /** 重複チェックしながら乱数作成 */
+                        for(j = startNo; j <= endNo; j++){
+                            for(i = 0; i <= n_choices - 2; i++){
+                                while(true){
+                                    var tmp = intRandom(startNo, endNo);
+                                    if(!randoms.includes(tmp)){
+                                        randoms.push(tmp);
+                                        break;
+                                    }
+                                }
+                            }
+                            q.push(randoms);
+                            randoms = [ j + 1 ];
+                        }
+                        console.log('????????????????????');
+                        console.log(q);
+                        
+                       
+                    }
+
+                    //問題と解答
+                    qa = new Array(endNo-startNo+1);
+                    
+                    for(i = 0; i <= endNo-startNo; i++){
+                        //qa[i] = [data[q[i][0]].en, data[q[i][0]].jp, data[q[i][1]].jp, data[q[i][2]].jp, data[q[i][3]].jp, data[q[i][4]].jp,　data[q[i][5]].jp,　data[q[i][6]].jp,　data[q[i][7]].jp,1]
+                       qa[i] = new Array(n_choices + 2);
+                       qa[i][0] = (data[q[i][0]].en);
+                        for(j = 0; j <= n_choices - 1; j++){
+                            e = data[q[i][j]].jp
+                            console.log("++++++++++++++")
+                            console.log(e)
+                            qa[i][j + 1] = (e);
+                        }
+                        qa[i][n_choices + 1] = (1);
+
+                        var ansNo = intRandom(1, n_choices);
+                        qa[i][n_choices + 1] = ansNo;
+                        var temp = qa[i][ansNo]; //入れ替える場所の選択肢を一旦保存
+                        qa[i][ansNo] = qa[i][1];
+                        qa[i][1] = temp;
+                       
+                    }
+                    console.log("///////////////////////////")
+                    console.log(qa)
+
+                }
+
+                /** startNo以上endNo以下の整数値の乱数を返す */
+                function intRandom(startNo, endNo){
+                            return Math.floor( Math.random() * (endNo - startNo + 1)) + startNo;
+                }
+
+                //英単語読み上げ
+                var synthes = new SpeechSynthesisUtterance();
+                var voices = window.speechSynthesis.getVoices();
+                console.log(voices)
+                function speak(word) {
+                    for (var i = 0; i < voices.length; i++){
+                        if (voices[i].name == 'Alex') {
+                            synthes.voice = voices[i];
+                        }
+                    }
+                    synthes.volume = 1;
+                    synthes.text = word;
+                    synthes.lang = 'en-US';
+                    speechSynthesis.speak(synthes);
+                }
+
+                //クイズの作成
+                generateQuestions();
+
+                //初期設定
+                q_sel = n_choices; //選択肢の数
+
+
+                setReady();
+            // qa[0] = ["resume","再開する","評価する，査定する","保留する，与えない","先行する",1];
+                // qa[1] = ["クラゲを漢字で書くとどれ？","水浮","水母","水星",2];
+                // qa[2] = ["カタツムリを漢字で書くとどれ？","禍牛","鍋牛","蝸牛",3];
+                // qa[3] = ["バッタを漢字で書くとどれ？","飛蝗","飛蟻","飛脚",1];
+                // qa[4] = ["タツノオトシゴを英語にするとどれ？","sea fish","sea horse","sea dragon",2];
+                // qa[5] = ["マグロを英語にするとどれ？","funa","suna","tuna",3];
+                // qa[6] = ["トンボを英語にするとどれ？","fly","dragonfly","butterfly",2];
+                // qa[7] = ["ヒトデを英語にするとどれ？","starfish","starshell","starstartNoe",1];
+                // qa[8] = ["恒星の中で最も明るい星は？","デネブ","スピカ","シリウス",3];
+                // qa[9] = ["惑星の中で最も重たいのはどれ？","太陽","木星","天王星",2];
+                function setReady() {
+                    startNo = parseInt(startbox.value);
+                    endNo = parseInt(endbox.value);
+                    n_choices = parseInt(choicebox.value);
+                    q_sel = n_choices;
+
+                    generateQuestions();
+
+                    count = 0; //問題番号
+                    ansers = new Array(); //解答記録
+
+                    //最初の問題
+                    quiz();
+                }
+
+                function timeOver(){
+                    anser(0, -1);
+
+                }
+
+
+                //問題表示
+                function quiz() {
+                    //タイマーのセットアップ
+                    var timerId = setTimeout(timeOver, 10000);
+
+                    var s, n;
+                    //問題
+                    document.getElementById("text_q").innerHTML = (count + 1) + "問目(" + (startNo + count) + "番目)：" + qa[count][0];
+                    //選択肢
+                    s = "";
+                    for (n=1;n<=q_sel;n++) {
+                    s += "【<a href='javascript:anser(" + n +  "," + timerId + ")'>" + n + "：" + qa[count][n] + "</a>】";
+                    }
+                    document.getElementById("text_s").innerHTML = s;
+
+                    speak(qa[count][0]);
+                    
+                }
+
+                //解答表示
+                function anser(num, timerId) {
+                    //タイマーをキャンセル
+                    clearTimeout(timerId);
+
+                    var s;
+                    s = (count + 1) + "問目：";
+                    //答え合わせ
+                    if (num == qa[count][q_sel + 1]) {
+                        //正解
+                        s += "○" + qa[count][num];
+                        ansers[count] = "○";
+                    } else {
+                        s += "×" + qa[count][num];
+                        ansers[count] = "×";
+                    }
+                    document.getElementById("text_a").innerHTML = s;
+
+                    //次の問題を表示
+                    count++;
+                    if (count < endNo - startNo + 1) {
+                        quiz();
+                    } else {
+                        //終了
+                        s = "<table border='2'><caption>成績発表</caption>";
+                        //1行目
+                        s += "<tr><th>問題</th>";
+                        for (n=0;n<endNo - startNo + 1;n++) {
+                        s += "<th>" + (n+1) + "</th>";
+                        }
+                        s += "</tr>";
+                        //2行目
+                        s += "<tr><th>成績</th>";
+                        for (n=0;n<endNo - startNo + 1;n++) {
+                        s += "<td>" + ansers[n] + "</td>";
+                        }
+                        s += "</tr>";
+                        s += "</table>";
+                        document.getElementById("text_q").innerHTML = s;
+                        //次の選択肢
+                        s = "【<a href='javascript:history.back()'>前のページに戻る</a>】";
+                        s += "【<a href='javascript:setReady()'>テストをやり直す</a>】";
+                        s += "【<a href=''>次の問題に進む</a>】";
+                        document.getElementById("text_s").innerHTML = s;
+                    }
+            }
+            
+            function test_post(){
+                console.log("test_post is called!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+                var data = { sheetNo: 1, data: [{"name":"kano", "age":"16"}] }; // POSTメソッドで送信するデータ
+                var xmlHttpRequest = new XMLHttpRequest();
+                xmlHttpRequest.onreadystatechange = function()
+                {
+                    var READYSTATE_COMPLETED = 4;
+                    var HTTP_STATUS_OK = 200;
+
+                    if( this.readyState == READYSTATE_COMPLETED
+                    && this.status == HTTP_STATUS_OK )
+                    {
+                        // レスポンスの表示
+                        alert( this.responseText );
+                    }
+                }
+
+                xmlHttpRequest.open( 'POST', 'https://script.google.com/macros/s/AKfycbzaCWnomBaDOJPe6YNbTKqgidcgv-AaAQ4fAb35Ouyw8cdmG8ZtLG0FTe79UYVNUe1GFQ/exec' );
+
+                // サーバに対して解析方法を指定する
+                //xmlHttpRequest.setRequestHeader( 'Content-Type', 'application/x-www-form-urlencoded' );
+
+                // データをリクエスト ボディに含めて送信する
+                xmlHttpRequest.send( data );
+            }
+            
+        
+        </script>
+
+    </body>
+</html>
