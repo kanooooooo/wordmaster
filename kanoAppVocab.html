@@ -29,7 +29,7 @@
 　　　　　　　　　 var startNo = parseInt(startbox.value);
 
                 const endbox = document.getElementById("endNo");
-                endbox.value = 10;
+                endbox.value = 216;
                 var endNo = parseInt(endbox.value);  
 
                 const choicebox = document.getElementById("n_choices");
@@ -40,7 +40,7 @@
                 function generateQuestions(){
                     
                     let request = new XMLHttpRequest();
-                    request.open('GET', 'https://script.google.com/macros/s/AKfycbzS8Sf3N4zRfXcNWNzJC-cq816Bc6wGkd_zIQLNnkt6NiQJixr8uJVQrpz-T4PR5Ayz0Q/exec', false);
+                    request.open('GET', 'https://script.google.com/macros/s/AKfycbz_XnOCPDg0wRf3-5uGJTB5ri7eDfFkbuX9_3A285H0mv-tXmuAMaPgjp_kQQsnP8SJ1A/exec', false);
                     request.send(null);
 
                     
@@ -63,10 +63,10 @@
                         
                         
                         /** 重複チェックしながら乱数作成 */
-                        for(j = startNo; j <= endNo; j++){
+                        for(j = startNo - 1; j <= endNo; j++){
                             for(i = 0; i <= n_choices - 2; i++){
                                 while(true){
-                                    var tmp = intRandom(startNo, endNo);
+                                    var tmp = intRandom(startNo-1, endNo-1);
                                     if(!randoms.includes(tmp)){
                                         randoms.push(tmp);
                                         break;
@@ -90,8 +90,12 @@
                        qa[i] = new Array(n_choices + 2);
                        qa[i][0] = (data[q[i][0]].en);
                         for(j = 0; j <= n_choices - 1; j++){
+                            console.log("++++++++++++++" + "i:" + i + ", j:" + j + ", size:" + q[i].length)
+                            if (i==215) {
+                                console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+                                console.log(q[i]);
+                            }
                             e = data[q[i][j]].jp
-                            console.log("++++++++++++++")
                             console.log(e)
                             qa[i][j + 1] = (e);
                         }
