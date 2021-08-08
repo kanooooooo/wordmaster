@@ -13,7 +13,18 @@
         <input id = "startNo" type="number" size="10">start</input>
         <input id = "endNo" type="number" size="10">end</input>
         <input id = "n_choices" type="number" size="10">choices</input>
-        <input id = "post_data" type="button" onclick="test_post()" value="post">
+        <input type="button" onclick="OnButtonClick();" value="START"/><br/>
+
+        <form id="target">
+            <input name="E_or_J" type="radio" value="en"> 英→日
+            <input name="E_or_J" type="radio" value="jp"> 日→英
+        </form>
+
+
+        <!-- <input type="radio" name="my_radio" value="value_aaa" id="id_aaa" checked >
+        <label for="id_aaa" >英→日</label> <br>
+        <input type="radio" name="my_radio" value="value_bbb" id="id_bbb" >
+        <label for="id_bbb" >日→英</label> <br> -->
 
         <h2>問題</h2>
         <div id="text_q"></div>
@@ -23,19 +34,25 @@
         <div id="text_a"></div>
 
         <script type="text/javascript">
+
+            //STARTを押してから解答開始
+
                 /** startNoとendNoの設定 */
                 const startbox = document.getElementById("startNo");
                 startbox.value = 1;
 　　　　　　　　　 var startNo = parseInt(startbox.value);
 
-                const endbox = document.getElementById("endNo");
-                endbox.value = 216;
-                var endNo = parseInt(endbox.value);  
+                var endbox = document.getElementById("endNo");
+                endbox.value = 10;
+                var endNo = 10;  
 
                 const choicebox = document.getElementById("n_choices");
                 choicebox.value = 8;
                 var  n_choices = parseInt(choicebox.value); 
-                 
+
+                const enjpbox = document.getElementById("target");
+                var enjplist = enjpbox.E_or_J;
+                enjplist.value = "en"
 
                 function generateQuestions(){
                     
@@ -48,8 +65,6 @@
                         var data = JSON.parse(request.responseText);
                         console.log(data.length);
                         console.log(data);
-
-
 
                         console.log("====================");
                         console.log(startNo);
@@ -79,7 +94,7 @@
                         console.log('????????????????????');
                         console.log(q);
                         
-                       
+                    
                     }
 
                     //問題と解答
@@ -87,17 +102,28 @@
                     
                     for(i = 0; i <= endNo-startNo; i++){
                         //qa[i] = [data[q[i][0]].en, data[q[i][0]].jp, data[q[i][1]].jp, data[q[i][2]].jp, data[q[i][3]].jp, data[q[i][4]].jp,　data[q[i][5]].jp,　data[q[i][6]].jp,　data[q[i][7]].jp,1]
-                       qa[i] = new Array(n_choices + 2);
-                       qa[i][0] = (data[q[i][0]].en);
+                        qa[i] = new Array(n_choices + 2);
+
+                        if( enjplist.value === "en" ){
+                            qa[i][0] = (data[q[i][0]].en);
+                        } else if( enjplist.value === "jp" ){
+                            qa[i][0] = (data[q[i][0]].jp);
+                        }
                         for(j = 0; j <= n_choices - 1; j++){
                             console.log("++++++++++++++" + "i:" + i + ", j:" + j + ", size:" + q[i].length)
                             if (i==215) {
                                 console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
                                 console.log(q[i]);
                             }
-                            e = data[q[i][j]].jp
-                            console.log(e)
-                            qa[i][j + 1] = (e);
+                            if( enjplist.value === "en" ){
+                                e = data[q[i][j]].jp;
+                                qa[i][j + 1] = (e);
+
+                            } else if( enjplist.value === "jp" ){
+                                e = data[q[i][j]].en;
+                                qa[i][j + 1] = (e);
+
+                            }
                         }
                         qa[i][n_choices + 1] = (1);
 
@@ -106,7 +132,6 @@
                         var temp = qa[i][ansNo]; //入れ替える場所の選択肢を一旦保存
                         qa[i][ansNo] = qa[i][1];
                         qa[i][1] = temp;
-                       
                     }
                     console.log("///////////////////////////")
                     console.log(qa)
@@ -116,7 +141,7 @@
                 /** startNo以上endNo以下の整数値の乱数を返す */
                 function intRandom(startNo, endNo){
                             return Math.floor( Math.random() * (endNo - startNo + 1)) + startNo;
-                }
+                 }
 
                 //英単語読み上げ
                 var synthes = new SpeechSynthesisUtterance();
@@ -134,6 +159,8 @@
                     speechSynthesis.speak(synthes);
                 }
 
+
+
                 //クイズの作成
                 generateQuestions();
 
@@ -142,7 +169,7 @@
 
 
                 setReady();
-            // qa[0] = ["resume","再開する","評価する，査定する","保留する，与えない","先行する",1];
+             // qa[0] = ["resume","再開する","評価する，査定する","保留する，与えない","先行する",1];
                 // qa[1] = ["クラゲを漢字で書くとどれ？","水浮","水母","水星",2];
                 // qa[2] = ["カタツムリを漢字で書くとどれ？","禍牛","鍋牛","蝸牛",3];
                 // qa[3] = ["バッタを漢字で書くとどれ？","飛蝗","飛蟻","飛脚",1];
@@ -157,6 +184,8 @@
                     endNo = parseInt(endbox.value);
                     n_choices = parseInt(choicebox.value);
                     q_sel = n_choices;
+                    enjplist = enjpbox.E_or_J;
+
 
                     generateQuestions();
 
@@ -167,7 +196,7 @@
                     quiz();
                 }
 
-                function timeOver(){
+               function timeOver(){
                     anser(0, -1);
 
                 }
@@ -188,7 +217,10 @@
                     }
                     document.getElementById("text_s").innerHTML = s;
 
-                    speak(qa[count][0]);
+                    if( enjplist.value === "en" ){
+                       speak(qa[count][0]);  
+                    }
+
                     
                 }
 
@@ -239,31 +271,31 @@
                     }
             }
             
-            function test_post(){
-                console.log("test_post is called!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-                var data = { sheetNo: 1, data: [{"name":"kano", "age":"16"}] }; // POSTメソッドで送信するデータ
-                var xmlHttpRequest = new XMLHttpRequest();
-                xmlHttpRequest.onreadystatechange = function()
-                {
-                    var READYSTATE_COMPLETED = 4;
-                    var HTTP_STATUS_OK = 200;
+            // function test_post(){
+            //     console.log("test_post is called!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+            //     var data = { sheetNo: 1, data: [{"name":"kano", "age":"16"}] }; // POSTメソッドで送信するデータ
+            //     var xmlHttpRequest = new XMLHttpRequest();
+            //     xmlHttpRequest.onreadystatechange = function()
+            //     {
+            //         var READYSTATE_COMPLETED = 4;
+            //         var HTTP_STATUS_OK = 200;
 
-                    if( this.readyState == READYSTATE_COMPLETED
-                    && this.status == HTTP_STATUS_OK )
-                    {
-                        // レスポンスの表示
-                        alert( this.responseText );
-                    }
-                }
+            //         if( this.readyState == READYSTATE_COMPLETED
+            //         && this.status == HTTP_STATUS_OK )
+            //         {
+            //             // レスポンスの表示
+            //             alert( this.responseText );
+            //         }
+            //     }
 
-                xmlHttpRequest.open( 'POST', 'https://script.google.com/macros/s/AKfycbzaCWnomBaDOJPe6YNbTKqgidcgv-AaAQ4fAb35Ouyw8cdmG8ZtLG0FTe79UYVNUe1GFQ/exec' );
+            //     xmlHttpRequest.open( 'POST', 'https://script.google.com/macros/s/AKfycbzaCWnomBaDOJPe6YNbTKqgidcgv-AaAQ4fAb35Ouyw8cdmG8ZtLG0FTe79UYVNUe1GFQ/exec' );
 
-                // サーバに対して解析方法を指定する
-                //xmlHttpRequest.setRequestHeader( 'Content-Type', 'application/x-www-form-urlencoded' );
+            //     // サーバに対して解析方法を指定する
+            //     //xmlHttpRequest.setRequestHeader( 'Content-Type', 'application/x-www-form-urlencoded' );
 
-                // データをリクエスト ボディに含めて送信する
-                xmlHttpRequest.send( data );
-            }
+            //     // データをリクエスト ボディに含めて送信する
+            //     xmlHttpRequest.send( data );
+            // }
             
         
         </script>
