@@ -13,7 +13,7 @@
         <input id = "startNo" type="number" size="10">start</input>
         <input id = "endNo" type="number" size="10">end</input>
         <input id = "n_choices" type="number" size="10">choices</input>
-        <input type="button" onclick="OnButtonClick();" value="START"/><br/>
+        <input type="button" onclick="wordMasterStart()" value="START">
 
         <form id="target">
             <input name="E_or_J" type="radio" value="en"> 英→日
@@ -143,7 +143,7 @@
                             return Math.floor( Math.random() * (endNo - startNo + 1)) + startNo;
                  }
 
-                //英単語読み上げ
+                //英単語読み上げるための設定
                 var synthes = new SpeechSynthesisUtterance();
                 var voices = window.speechSynthesis.getVoices();
                 console.log(voices)
@@ -168,7 +168,6 @@
                 q_sel = n_choices; //選択肢の数
 
 
-                setReady();
              // qa[0] = ["resume","再開する","評価する，査定する","保留する，与えない","先行する",1];
                 // qa[1] = ["クラゲを漢字で書くとどれ？","水浮","水母","水星",2];
                 // qa[2] = ["カタツムリを漢字で書くとどれ？","禍牛","鍋牛","蝸牛",3];
@@ -194,12 +193,17 @@
 
                     //最初の問題
                     quiz();
-                }
+            }
 
-               function timeOver(){
-                    anser(0, -1);
+            function wordMasterStart(){
+                    setReady();
+            }
+                
 
-                }
+            function timeOver(){
+                anser(0, -1);
+
+            }
 
 
                 //問題表示
