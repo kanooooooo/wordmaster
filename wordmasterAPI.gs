@@ -9,7 +9,7 @@ function doGet() {
 function getData() {
     const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
     const sheet1 = spreadsheet.getSheetByName('シート3');
-    const range = sheet1.getRange('A1:C103');
+    const range = sheet1.getRange('B1:D422');
     const values = range.getValues();
     const data = values.map(row => {
         let col = 0;
@@ -24,28 +24,38 @@ function getData() {
 }
 
 function doPost(e) {
-  const reqParam = e.parameter;
-  const sheetNo = parseInt(reqParam.sheetNo) || 1;
-  sheet = ss.getSheets()[sheetNo - 1];
-  var data = JSON.parse(reqParam.data);
-  postJsonToSpreadSheet(data);
-  return ContentService.createTextOutput(JSON.stringify({ result: "post done" })); //JSONを返すとエラーにならない？ 
+  
+  var params = JSON.parse(e.postData.getDataAsString());  // ※
+  //var value = params.value;  // => "AAA"が取れる
+  
+  //var params = e.postData.getDataAsString();
+
+  // シートを取得
+  var sheet = getSheet('シート3');
+  
+  // シートの最終行を取得
+  var lastRow = sheet.getLastRow();
+  
+  //新しい結果が入ったら過去の結果を右にずらす
+  sheet.insertColumnAfter(5);
+
+
+  var startNo = params.startNo;
+  var endNo = params.endNo;  
+  var data = Utilities.parseCsv(params.result);
+  sheet.getRange('F'+ startNo + ':F'+ endNo).setValues(data);
+
 }
-function postJsonToSpreadSheet(arrObj) {
-  //受け付けるJSONは、[{key1:data1, key2:data2,....},...]、オブジェクトが配列になっている形式
-  //オブジェクトのキーがスプレッドシートの項目名として1行目に入力される
-  sheet.clear();
-  //タイトル行を書き込み
-  const keys = [Object.keys(arrObj[0])];//setValuesには必ず2次元配列を渡すので [ ] で囲んで2次元配列にする
-  sheet.getRange(1, 1, 1, keys[0].length).setValues(keys);//項目名を書き込み
-  //オブジェクトからデータ書き込み用の2次元配列を作成
-  const arrToWrite = arrObj.map((obj) => {
-    const arr = [];
-    for (const key of keys[0]) { arr.push(obj[key]); }
-    return arr;
-  });
-  const lastColumn = arrToWrite[0].length; //1個め配列の長さ＝カラムの数を取得する
-  const lastRow = arrToWrite.length;   //行の数を取得する
-  sheet.getRange(2, 1, lastRow, lastColumn).setValues(arrToWrite);
+
+function getSheet(name){
+  
+  // SSIDからスプレッドシートの取得
+  var ssId = '1MtdQ9tD5cTtlaYG01FRaZBifOcn7yesWq53nECfS2ww';
+  var ss = SpreadsheetApp.openById(ssId);
+
+  // 指定されたシート名からシートを取得して返却
+  var sheet = ss.getSheetByName(name);
+  return sheet;
 }
+
 
