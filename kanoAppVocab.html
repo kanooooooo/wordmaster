@@ -21,11 +21,6 @@
         </form>
 
 
-        <!-- <input type="radio" name="my_radio" value="value_aaa" id="id_aaa" checked >
-        <label for="id_aaa" >英→日</label> <br>
-        <input type="radio" name="my_radio" value="value_bbb" id="id_bbb" >
-        <label for="id_bbb" >日→英</label> <br> -->
-
         <h2>問題</h2>
         <div id="text_q"></div>
         <h2>選択</h2>
@@ -36,6 +31,7 @@
         <script type="text/javascript">
 
             //STARTを押してから解答開始
+                const goolgeAPI_URL = 'https://script.google.com/macros/s/AKfycbyiCqP5uPAD9KnRNTW4HfvNF3gmY0DX-h5IvuzHd3o1JLvOYxx27x13W4IqeG_ajhyOSQ/exec'
 
                 /** startNoとendNoの設定 */
                 const startbox = document.getElementById("startNo");
@@ -43,8 +39,8 @@
 　　　　　　　　　 var startNo = parseInt(startbox.value);
 
                 var endbox = document.getElementById("endNo");
-                endbox.value = 10;
-                var endNo = 10;  
+                endbox.value = 422;
+                var endNo = 422;  
 
                 const choicebox = document.getElementById("n_choices");
                 choicebox.value = 8;
@@ -57,7 +53,7 @@
                 function generateQuestions(){
                     
                     let request = new XMLHttpRequest();
-                    request.open('GET', 'https://script.google.com/macros/s/AKfycbz_XnOCPDg0wRf3-5uGJTB5ri7eDfFkbuX9_3A285H0mv-tXmuAMaPgjp_kQQsnP8SJ1A/exec', false);
+                    request.open('GET', goolgeAPI_URL, false);
                     request.send(null);
 
                     
@@ -167,17 +163,6 @@
                 //初期設定
                 q_sel = n_choices; //選択肢の数
 
-
-             // qa[0] = ["resume","再開する","評価する，査定する","保留する，与えない","先行する",1];
-                // qa[1] = ["クラゲを漢字で書くとどれ？","水浮","水母","水星",2];
-                // qa[2] = ["カタツムリを漢字で書くとどれ？","禍牛","鍋牛","蝸牛",3];
-                // qa[3] = ["バッタを漢字で書くとどれ？","飛蝗","飛蟻","飛脚",1];
-                // qa[4] = ["タツノオトシゴを英語にするとどれ？","sea fish","sea horse","sea dragon",2];
-                // qa[5] = ["マグロを英語にするとどれ？","funa","suna","tuna",3];
-                // qa[6] = ["トンボを英語にするとどれ？","fly","dragonfly","butterfly",2];
-                // qa[7] = ["ヒトデを英語にするとどれ？","starfish","starshell","starstartNoe",1];
-                // qa[8] = ["恒星の中で最も明るい星は？","デネブ","スピカ","シリウス",3];
-                // qa[9] = ["惑星の中で最も重たいのはどれ？","太陽","木星","天王星",2];
                 function setReady() {
                     startNo = parseInt(startbox.value);
                     endNo = parseInt(endbox.value);
@@ -238,11 +223,11 @@
                     //答え合わせ
                     if (num == qa[count][q_sel + 1]) {
                         //正解
-                        s += "○" + qa[count][num];
-                        ansers[count] = "○";
+                        s += "0" + qa[count][num];
+                        ansers[count] = "0";
                     } else {
-                        s += "×" + qa[count][num];
-                        ansers[count] = "×";
+                        s += "1" + qa[count][num];
+                        ansers[count] = "1";
                     }
                     document.getElementById("text_a").innerHTML = s;
 
@@ -266,7 +251,27 @@
                         }
                         s += "</tr>";
                         s += "</table>";
+                        console.log("!@#$!@#$!@#$!@#$!@#$!@#$!@#$!@#$!@#$")
+                        console.log(ansers)
+                        
+
                         document.getElementById("text_q").innerHTML = s;
+
+                        //結果をgoogleスプレッドシートに送信
+                        var result = ""
+                        for (i = 0; i < ansers.length; i++){
+                            result += ansers[i] + "\n";
+                        }
+                        
+                        result = result.slice(0, -1)
+                        console.log("**************")
+                        console.log(result)
+                        var xhr = new XMLHttpRequest();
+                        xhr.open("POST", goolgeAPI_URL, true);
+                        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                        xhr.send(JSON.stringify({"startNo":startNo, "endNo":endNo, "result":result}));
+
+
                         //次の選択肢
                         s = "【<a href='javascript:history.back()'>前のページに戻る</a>】";
                         s += "【<a href='javascript:setReady()'>テストをやり直す</a>】";
@@ -274,33 +279,7 @@
                         document.getElementById("text_s").innerHTML = s;
                     }
             }
-            
-            // function test_post(){
-            //     console.log("test_post is called!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-            //     var data = { sheetNo: 1, data: [{"name":"kano", "age":"16"}] }; // POSTメソッドで送信するデータ
-            //     var xmlHttpRequest = new XMLHttpRequest();
-            //     xmlHttpRequest.onreadystatechange = function()
-            //     {
-            //         var READYSTATE_COMPLETED = 4;
-            //         var HTTP_STATUS_OK = 200;
-
-            //         if( this.readyState == READYSTATE_COMPLETED
-            //         && this.status == HTTP_STATUS_OK )
-            //         {
-            //             // レスポンスの表示
-            //             alert( this.responseText );
-            //         }
-            //     }
-
-            //     xmlHttpRequest.open( 'POST', 'https://script.google.com/macros/s/AKfycbzaCWnomBaDOJPe6YNbTKqgidcgv-AaAQ4fAb35Ouyw8cdmG8ZtLG0FTe79UYVNUe1GFQ/exec' );
-
-            //     // サーバに対して解析方法を指定する
-            //     //xmlHttpRequest.setRequestHeader( 'Content-Type', 'application/x-www-form-urlencoded' );
-
-            //     // データをリクエスト ボディに含めて送信する
-            //     xmlHttpRequest.send( data );
-            // }
-            
+                        
         
         </script>
 
