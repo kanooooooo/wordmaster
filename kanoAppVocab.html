@@ -31,24 +31,32 @@
         <script type="text/javascript">
 
             //STARTを押してから解答開始
-                const goolgeAPI_URL = 'https://script.google.com/macros/s/AKfycbzXB_rM4c05yFEkVXpq7pgMWIpAhy4FIof1vSRDh9GE4j8mKAgFXG2d_T175LsQGaEVPA/exec'
+                const goolgeAPI_URL = 'https://script.google.com/macros/s/AKfycbxjE2JkD5oH6yJSt4ZDDzVshajzs1dFqX5FCOUMVWN9TYZzL__24oTgR3D9c5oxS3amMQ/exec'
+                // let request = new XMLHttpRequest();
+                //     request.open('GET', goolgeAPI_URL, false);
+                //     request.send("numberOfQuizes");
+                //     if (request.status == 200){
+                //         lastNo
 
-                /** startNoとendNoの設定 */
-                const startbox = document.getElementById("startNo");
-                startbox.value = 1;
-　　　　　　　　　 var startNo = parseInt(startbox.value);
 
-                var endbox = document.getElementById("endNo");
-                endbox.value = 422;
-                var endNo = 422;  
 
-                const choicebox = document.getElementById("n_choices");
-                choicebox.value = 8;
-                var  n_choices = parseInt(choicebox.value); 
+                    //問題のスタートとエンドの初期値を設定する
+                    const startbox = document.getElementById("startNo");
+                    startbox.value = 1;
+    　　　　　　　　　 var startNo = parseInt(startbox.value);
 
-                const enjpbox = document.getElementById("target");
-                var enjplist = enjpbox.E_or_J;
-                enjplist.value = "en"
+                    var endbox = document.getElementById("endNo");
+                    endbox.value = 1500;
+                    var endNo = 1500;  
+                                    
+                    /** startNoとendNoの設定 */
+                    const choicebox = document.getElementById("n_choices");
+                    choicebox.value = 8;
+                    var  n_choices = parseInt(choicebox.value); 
+
+                    const enjpbox = document.getElementById("target");
+                    var enjplist = enjpbox.E_or_J;
+                    enjplist.value = "en"
 
                 function generateQuestions(){
                     
@@ -60,18 +68,31 @@
                     if (request.status == 200){
                         var data = JSON.parse(request.responseText);
                         console.log(data.length);
+                        console.log("====================");
                         console.log(data);
 
-                        console.log("====================");
                         console.log(startNo);
                         console.log(endNo);
                         console.log(endNo-startNo+1)
+
+                        var targetData = [];
+                        for(i = 0; i < 1500; i++){
+                           var a = (data[i]).point;
+                            if(a > 0){
+                                targetData.push(data[i]);
+                            }
+                        }
+                        console.log(targetData)
+                        console.log("<<<<<<<<<<<<<<<<<<<<<<<<<<<")
+                        
+                        console.log(targetData)
+                        endNo = targetData.length;
+                        endbox.value = endNo;
                         
                         /** 重複チェック用配列 */
                         var randoms = [startNo - 1];
 
                         var q = [];
-                        
                         
                         /** 重複チェックしながら乱数作成 */
                         for(j = startNo - 1; j <= endNo; j++){
@@ -88,10 +109,11 @@
                             randoms = [ j + 1 ];
                         }
                         console.log('????????????????????');
-                        console.log(q);
-                        
-                    
-                    }
+                        console.log(q.length);
+                    }      
+
+
+
 
                     //問題と解答
                     qa = new Array(endNo-startNo+1);
@@ -101,22 +123,22 @@
                         qa[i] = new Array(n_choices + 2);
 
                         if( enjplist.value === "en" ){
-                            qa[i][0] = (data[q[i][0]].en);
+                            qa[i][0] = (targetData[q[i][0]].en);
                         } else if( enjplist.value === "jp" ){
-                            qa[i][0] = (data[q[i][0]].jp);
+                            qa[i][0] = (targetData[q[i][0]].jp);
                         }
                         for(j = 0; j <= n_choices - 1; j++){
-                            console.log("++++++++++++++" + "i:" + i + ", j:" + j + ", size:" + q[i].length)
+                            // console.log("++++++++++++++" + "i:" + i + ", j:" + j + ", size:" + q[i].length)
                             if (i==215) {
                                 console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
                                 console.log(q[i]);
                             }
                             if( enjplist.value === "en" ){
-                                e = data[q[i][j]].jp;
+                                e = targetData[q[i][j]].jp;
                                 qa[i][j + 1] = (e);
 
                             } else if( enjplist.value === "jp" ){
-                                e = data[q[i][j]].en;
+                                e = datwa[q[i][j]].en;
                                 qa[i][j + 1] = (e);
 
                             }
@@ -223,8 +245,8 @@
                     //答え合わせ
                     if (num == qa[count][q_sel + 1]) {
                         //正解
-                        s += "0" + qa[count][num];
-                        ansers[count] = "0";
+                        s += "-1" + qa[count][num];
+                        ansers[count] = "-1";
                     } else {
                         s += "1" + qa[count][num];
                         ansers[count] = "1";
