@@ -9,11 +9,11 @@ function doGet() {
 function getData() {
 
     // シートを取得
-    var sheet = getSheet('シート5');
+    var sheet = getSheet('seya');
     // シートの最終行を取得
     var lastRow = sheet.getLastRow();
     const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
-    const sheet1 = spreadsheet.getSheetByName('シート5');
+    const sheet1 = spreadsheet.getSheetByName('seya');
     const range = sheet1.getRange('A1:E'+ lastRow);
     const values = range.getValues();
     const data = values.map(row => {
@@ -38,7 +38,7 @@ function doPost(e) {
   //var params = e.postData.getDataAsString();
 
   // シートを取得
-  var sheet = getSheet('シート5');
+  var sheet = getSheet('seya');
   
   // シートの最終行を取得
   var lastRow = sheet.getLastRow();
@@ -52,7 +52,7 @@ function doPost(e) {
   var data = Utilities.parseCsv(params.result);
   sheet.getRange('F'+ startNo + ':F'+ endNo).setValues(data);
 
-  var sheet = getSheet('シート5');
+  var sheet = getSheet('seya');
   // 前回までの結果(E列)と最後のテスト結果（F列）を取得
   var lastRow = sheet.getLastRow();
   const data_e = sheet.getRange(1, 5, lastRow).getValues(); //E列
@@ -85,7 +85,7 @@ function getSheet(name){
 }
 
 // function kano(){
-//   var sheet = getSheet('シート3');
+//   var sheet = getSheet('seya');
 //   // 前回までの結果(E列)と最後のテスト結果（F列）を取得
 //   var lastRow = sheet.getLastRow();
 //   const data_e = sheet.getRange(1, 5, lastRow).getValues(); //E列
@@ -104,7 +104,3 @@ function getSheet(name){
 //   sheet.getRange('E1' + ':E'+ lastRow).setValues(results);
 //   console.log(results.length)
 // }
-
-
-
-

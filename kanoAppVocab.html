@@ -31,7 +31,7 @@
         <script type="text/javascript">
 
             //STARTを押してから解答開始
-                const goolgeAPI_URL = 'https://script.google.com/macros/s/AKfycbxjE2JkD5oH6yJSt4ZDDzVshajzs1dFqX5FCOUMVWN9TYZzL__24oTgR3D9c5oxS3amMQ/exec'
+                const goolgeAPI_URL = 'https://script.google.com/macros/s/AKfycbyy080USrw0LYzuo_5FH0XutLY1xiBzSuMbLH7t7in35e8FNj6x_iFPYWBJXatqaT-Hlw/exec'
                 // let request = new XMLHttpRequest();
                 //     request.open('GET', goolgeAPI_URL, false);
                 //     request.send("numberOfQuizes");
@@ -82,6 +82,14 @@
                                 targetData.push(data[i]);
                             }
                         }
+
+                        targetData = [];
+                        for(i = 0; i < 10; i++){
+                            targetData.push(data[i]);
+                        }
+                        endNo = 10
+
+
                         console.log(targetData)
                         console.log("<<<<<<<<<<<<<<<<<<<<<<<<<<<")
                         
@@ -143,13 +151,17 @@
 
                             }
                         }
-                        qa[i][n_choices + 1] = (1);
+                        qa[i][n_choices + 1] = 1; //正解の番号を入れる
+
+                        qa[i][n_choices + 2] = data[i].no;
 
                         var ansNo = intRandom(1, n_choices);
                         qa[i][n_choices + 1] = ansNo;
                         var temp = qa[i][ansNo]; //入れ替える場所の選択肢を一旦保存
                         qa[i][ansNo] = qa[i][1];
                         qa[i][1] = temp;
+
+
                     }
                     console.log("///////////////////////////")
                     console.log(qa)
@@ -275,9 +287,17 @@
                         s += "</table>";
                         console.log("!@#$!@#$!@#$!@#$!@#$!@#$!@#$!@#$!@#$")
                         console.log(ansers)
+
+                        for (n=0;n<endNo - startNo + 1;n++) {
+                            if (ansers[n] == 1) {
+                                s += "<p>" + "(" + (n+1) + ") " + "[" + qa[n][n_choices + 2] + "]" + qa[n][0] + "|" + qa[n][ qa[n][n_choices + 1] ] + "</p>";
+                            }
+
+                        }
                         
 
                         document.getElementById("text_q").innerHTML = s;
+
 
                         //結果をgoogleスプレッドシートに送信
                         var result = ""
