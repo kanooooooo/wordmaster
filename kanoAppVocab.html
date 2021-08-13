@@ -31,7 +31,7 @@
         <script type="text/javascript">
 
             //STARTを押してから解答開始
-                const goolgeAPI_URL = 'https://script.google.com/macros/s/AKfycbyy080USrw0LYzuo_5FH0XutLY1xiBzSuMbLH7t7in35e8FNj6x_iFPYWBJXatqaT-Hlw/exec'
+                const goolgeAPI_URL = 'https://script.google.com/macros/s/AKfycbw-s3m-OGkX6e1DM1FIwfvD1osBzwbd7808_nVTrE7iHU8mFd4KvLV__F9PsmrfzJ1ZRw/exec'
                 // let request = new XMLHttpRequest();
                 //     request.open('GET', goolgeAPI_URL, false);
                 //     request.send("numberOfQuizes");
@@ -79,15 +79,10 @@
                         for(i = 0; i < 1500; i++){
                            var a = (data[i]).point;
                             if(a > 0){
+                                console.log("i = " + i + ", point = " + data[i].point);
                                 targetData.push(data[i]);
                             }
                         }
-
-                        targetData = [];
-                        for(i = 0; i < 10; i++){
-                            targetData.push(data[i]);
-                        }
-                        endNo = 10
 
 
                         console.log(targetData)
@@ -153,7 +148,7 @@
                         }
                         qa[i][n_choices + 1] = 1; //正解の番号を入れる
 
-                        qa[i][n_choices + 2] = data[i].no;
+                        qa[i][n_choices + 2] = targetData[i].no;
 
                         var ansNo = intRandom(1, n_choices);
                         qa[i][n_choices + 1] = ansNo;
@@ -209,6 +204,7 @@
 
                     count = 0; //問題番号
                     ansers = new Array(); //解答記録
+                    ox = new Array(); //解答記録(O, X表示)
 
                     //最初の問題
                     quiz();
@@ -251,7 +247,6 @@
                 function anser(num, timerId) {
                     //タイマーをキャンセル
                     clearTimeout(timerId);
-
                     var s;
                     s = (count + 1) + "問目：";
                     //答え合わせ
@@ -259,9 +254,11 @@
                         //正解
                         s += "-1" + qa[count][num];
                         ansers[count] = "-1";
+                        ox[count] = "○";
                     } else {
                         s += "1" + qa[count][num];
                         ansers[count] = "1";
+                        ox[count] = "X";
                     }
                     document.getElementById("text_a").innerHTML = s;
 
@@ -281,12 +278,14 @@
                         //2行目
                         s += "<tr><th>成績</th>";
                         for (n=0;n<endNo - startNo + 1;n++) {
-                        s += "<td>" + ansers[n] + "</td>";
+                        s += "<td>" + ox[n] + "</td>";
                         }
                         s += "</tr>";
                         s += "</table>";
                         console.log("!@#$!@#$!@#$!@#$!@#$!@#$!@#$!@#$!@#$")
                         console.log(ansers)
+                        console.log("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
+                        console.log(ox)
 
                         for (n=0;n<endNo - startNo + 1;n++) {
                             if (ansers[n] == 1) {
@@ -295,17 +294,18 @@
 
                         }
                         
-
                         document.getElementById("text_q").innerHTML = s;
 
 
                         //結果をgoogleスプレッドシートに送信
-                        var result = ""
+                        var result = []
                         for (i = 0; i < ansers.length; i++){
-                            result += ansers[i] + "\n";
+                          result.push({"no":qa[i][n_choices + 2], "point":ansers[i]});
                         }
-                        
-                        result = result.slice(0, -1)
+
+                       // "     " + "[" + qa[i][n_choices + 2] + "]" + "          " + ansers[i] + "\n"
+
+                        //result = result.slice(0, -1)
                         console.log("**************")
                         console.log(result)
                         var xhr = new XMLHttpRequest();

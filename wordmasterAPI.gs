@@ -33,13 +33,16 @@ function getData() {
 function doPost(e) {
   
   var params = JSON.parse(e.postData.getDataAsString());  // ※
+  //var params = JSON.parse(e);//doPostを直接使うときは上のではなく、これを使う
   //var value = params.value;  // => "AAA"が取れる
   
   //var params = e.postData.getDataAsString();
 
   // シートを取得
   var sheet = getSheet('seya');
-  
+
+  //sheet.getRange(1, 4).setValue(JSON.stringify(params));
+  //sheet.getRange(1, 6).setValue(777);
   // シートの最終行を取得
   var lastRow = sheet.getLastRow();
   
@@ -50,9 +53,14 @@ function doPost(e) {
   var startNo = params.startNo;
   var endNo = params.endNo;  
   var data = Utilities.parseCsv(params.result);
-  sheet.getRange('F'+ startNo + ':F'+ endNo).setValues(data);
+  //sheet.getRange('F'+ startNo + ':F'+ endNo).setValues(data);
 
-  var sheet = getSheet('seya');
+  //適切なところにpointを入れる
+  var result = params.result;
+  for(i = 0; i<result.length; i++){
+    sheet.getRange(result[i].no, 6).setValue([result[i].point]);
+  }
+
   // 前回までの結果(E列)と最後のテスト結果（F列）を取得
   var lastRow = sheet.getLastRow();
   const data_e = sheet.getRange(1, 5, lastRow).getValues(); //E列
@@ -62,6 +70,9 @@ function doPost(e) {
   var results = [];
   for(let i=0; i<lastRow; i++){
     var update = parseInt(data_e[i]) + parseInt(data_f[i]);　//E列 + F列
+    if(update > 3){
+      update = 3;
+    }
     if(!isNaN(update)){
       results.push([update]);
     } else {
@@ -84,8 +95,8 @@ function getSheet(name){
   return sheet;
 }
 
-// function kano(){
-//   var sheet = getSheet('seya');
+// function seya(){
+//   var sheet = getSheet('シート3');
 //   // 前回までの結果(E列)と最後のテスト結果（F列）を取得
 //   var lastRow = sheet.getLastRow();
 //   const data_e = sheet.getRange(1, 5, lastRow).getValues(); //E列
@@ -104,3 +115,13 @@ function getSheet(name){
 //   sheet.getRange('E1' + ':E'+ lastRow).setValues(results);
 //   console.log(results.length)
 // }
+
+
+// function maru(){
+//   var data = JSON.stringify( {"startNo":2,"endNo":10,"result":[{"no":1,"point":"1"},{"no":1,"point":"1"},{"no":1,"point":"1"},{"no":1,"point":"1"},{"no":1,"point":"1"},{"no":1,"point":"1"},{"no":1,"point":"1"},{"no":1,"point":"1"},{"no":1,"point":"1"},{"no":2,"point":"1"},{"no":2,"point":"1"},{"no":2,"point":"1"},{"no":2,"point":"1"},{"no":2,"point":"1"},{"no":2,"point":"1"},{"no":2,"point":"1"},{"no":2,"point":"1"},{"no":2,"point":"1"},{"no":3,"point":"1"},{"no":3,"point":"1"},{"no":3,"point":"1"},{"no":3,"point":"1"},{"no":3,"point":"1"},{"no":3,"point":"1"},{"no":3,"point":"1"},{"no":3,"point":"1"},{"no":3,"point":"1"},{"no":4,"point":"1"},{"no":4,"point":"1"},{"no":4,"point":"1"},{"no":4,"point":"1"},{"no":4,"point":"1"},{"no":4,"point":"1"},{"no":4,"point":"1"},{"no":4,"point":"1"},{"no":4,"point":"1"},{"no":5,"point":"-1"},{"no":5,"point":"-1"},{"no":5,"point":"-1"},{"no":5,"point":"-1"},{"no":5,"point":"-1"},{"no":5,"point":"-1"},{"no":5,"point":"-1"},{"no":5,"point":"-1"},{"no":5,"point":"-1"},{"no":6,"point":"1"},{"no":6,"point":"1"},{"no":6,"point":"1"},{"no":6,"point":"1"},{"no":6,"point":"1"},{"no":6,"point":"1"},{"no":6,"point":"1"},{"no":6,"point":"1"},{"no":6,"point":"1"},{"no":7,"point":"1"},{"no":7,"point":"1"},{"no":7,"point":"1"},{"no":7,"point":"1"},{"no":7,"point":"1"},{"no":7,"point":"1"},{"no":7,"point":"1"},{"no":7,"point":"1"},{"no":7,"point":"1"},{"no":8,"point":"1"},{"no":8,"point":"1"},{"no":8,"point":"1"},{"no":8,"point":"1"},{"no":8,"point":"1"},{"no":8,"point":"1"},{"no":8,"point":"1"},{"no":8,"point":"1"},{"no":8,"point":"1"},{"no":9,"point":"1"},{"no":9,"point":"1"},{"no":9,"point":"1"},{"no":9,"point":"1"},{"no":9,"point":"1"},{"no":9,"point":"1"},{"no":9,"point":"1"},{"no":9,"point":"1"},{"no":9,"point":"1"}]});
+//  doPost(data);
+// }
+
+
+
+
