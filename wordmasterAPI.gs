@@ -1,3 +1,5 @@
+const sheet_name = "seya";
+
 function doGet() {
     const data = getData();
     const response = ContentService.createTextOutput();
@@ -9,11 +11,11 @@ function doGet() {
 function getData() {
 
     // シートを取得
-    var sheet = getSheet('seya');
+    var sheet = getSheet(sheet_name);
     // シートの最終行を取得
     var lastRow = sheet.getLastRow();
     const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
-    const sheet1 = spreadsheet.getSheetByName('seya');
+    const sheet1 = spreadsheet.getSheetByName(sheet_name);
     const range = sheet1.getRange('A1:E'+ lastRow);
     const values = range.getValues();
     const data = values.map(row => {
@@ -39,7 +41,7 @@ function doPost(e) {
   //var params = e.postData.getDataAsString();
 
   // シートを取得
-  var sheet = getSheet('seya');
+  var sheet = getSheet(sheet_name);
 
   //sheet.getRange(1, 4).setValue(JSON.stringify(params));
   //sheet.getRange(1, 6).setValue(777);
@@ -48,6 +50,7 @@ function doPost(e) {
   
   //新しい結果が入ったら過去の結果を右にずらす
   sheet.insertColumnAfter(5);
+  sheet.insertColumnAfter(6);
 
 
   var startNo = params.startNo;
@@ -59,6 +62,12 @@ function doPost(e) {
   var result = params.result;
   for(i = 0; i<result.length; i++){
     sheet.getRange(result[i].no, 6).setValue([result[i].point]);
+  }
+
+  //かかった時間を入れる
+    var result = params.result;
+  for(i = 0; i<result.length; i++){
+    sheet.getRange(result[i].no, 7).setValue([result[i].time]);
   }
 
   // 前回までの結果(E列)と最後のテスト結果（F列）を取得
@@ -94,34 +103,4 @@ function getSheet(name){
   var sheet = ss.getSheetByName(name);
   return sheet;
 }
-
-// function seya(){
-//   var sheet = getSheet('シート3');
-//   // 前回までの結果(E列)と最後のテスト結果（F列）を取得
-//   var lastRow = sheet.getLastRow();
-//   const data_e = sheet.getRange(1, 5, lastRow).getValues(); //E列
-//   const data_f = sheet.getRange(1, 6, lastRow).getValues(); //F列
-
-//   // 結果(E列)を更新
-//   var results = [];
-//   for(let i=0; i<lastRow; i++){
-//     var update = parseInt(data_e[i]) + parseInt(data_f[i]);　//E列 + F列
-//     if(!isNaN(update)){
-//       results.push([update]);
-//     } else {
-//       results.push([parseInt(data_e[i])]);
-//     }
-//   }
-//   sheet.getRange('E1' + ':E'+ lastRow).setValues(results);
-//   console.log(results.length)
-// }
-
-
-// function maru(){
-//   var data = JSON.stringify( {"startNo":2,"endNo":10,"result":[{"no":1,"point":"1"},{"no":1,"point":"1"},{"no":1,"point":"1"},{"no":1,"point":"1"},{"no":1,"point":"1"},{"no":1,"point":"1"},{"no":1,"point":"1"},{"no":1,"point":"1"},{"no":1,"point":"1"},{"no":2,"point":"1"},{"no":2,"point":"1"},{"no":2,"point":"1"},{"no":2,"point":"1"},{"no":2,"point":"1"},{"no":2,"point":"1"},{"no":2,"point":"1"},{"no":2,"point":"1"},{"no":2,"point":"1"},{"no":3,"point":"1"},{"no":3,"point":"1"},{"no":3,"point":"1"},{"no":3,"point":"1"},{"no":3,"point":"1"},{"no":3,"point":"1"},{"no":3,"point":"1"},{"no":3,"point":"1"},{"no":3,"point":"1"},{"no":4,"point":"1"},{"no":4,"point":"1"},{"no":4,"point":"1"},{"no":4,"point":"1"},{"no":4,"point":"1"},{"no":4,"point":"1"},{"no":4,"point":"1"},{"no":4,"point":"1"},{"no":4,"point":"1"},{"no":5,"point":"-1"},{"no":5,"point":"-1"},{"no":5,"point":"-1"},{"no":5,"point":"-1"},{"no":5,"point":"-1"},{"no":5,"point":"-1"},{"no":5,"point":"-1"},{"no":5,"point":"-1"},{"no":5,"point":"-1"},{"no":6,"point":"1"},{"no":6,"point":"1"},{"no":6,"point":"1"},{"no":6,"point":"1"},{"no":6,"point":"1"},{"no":6,"point":"1"},{"no":6,"point":"1"},{"no":6,"point":"1"},{"no":6,"point":"1"},{"no":7,"point":"1"},{"no":7,"point":"1"},{"no":7,"point":"1"},{"no":7,"point":"1"},{"no":7,"point":"1"},{"no":7,"point":"1"},{"no":7,"point":"1"},{"no":7,"point":"1"},{"no":7,"point":"1"},{"no":8,"point":"1"},{"no":8,"point":"1"},{"no":8,"point":"1"},{"no":8,"point":"1"},{"no":8,"point":"1"},{"no":8,"point":"1"},{"no":8,"point":"1"},{"no":8,"point":"1"},{"no":8,"point":"1"},{"no":9,"point":"1"},{"no":9,"point":"1"},{"no":9,"point":"1"},{"no":9,"point":"1"},{"no":9,"point":"1"},{"no":9,"point":"1"},{"no":9,"point":"1"},{"no":9,"point":"1"},{"no":9,"point":"1"}]});
-//  doPost(data);
-// }
-
-
-
 

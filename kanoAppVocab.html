@@ -20,6 +20,11 @@
             <input name="E_or_J" type="radio" value="jp"> 日→英
         </form>
 
+        <form id="choices">
+            <input name="R_or_S" type="radio" value="review"> 復習
+            <input name="R_or_S" type="radio" value="specify"> 指定
+        </form>
+
 
         <h2>問題</h2>
         <div id="text_q"></div>
@@ -31,7 +36,7 @@
         <script type="text/javascript">
 
             //STARTを押してから解答開始
-                const goolgeAPI_URL = 'https://script.google.com/macros/s/AKfycbw-s3m-OGkX6e1DM1FIwfvD1osBzwbd7808_nVTrE7iHU8mFd4KvLV__F9PsmrfzJ1ZRw/exec'
+                const goolgeAPI_URL = 'https://script.google.com/macros/s/AKfycbyhe4IuyJPfbwbMXg4ePH-gAv_BGcCydIVyN6S8T-lxiF3Ume5WmA66wCzA_61TeJomyg/exec'
                 // let request = new XMLHttpRequest();
                 //     request.open('GET', goolgeAPI_URL, false);
                 //     request.send("numberOfQuizes");
@@ -45,7 +50,7 @@
                     startbox.value = 1;
     　　　　　　　　　 var startNo = parseInt(startbox.value);
 
-                    var endbox = document.getElementById("endNo");
+                    const endbox = document.getElementById("endNo");
                     endbox.value = 1500;
                     var endNo = 1500;  
                                     
@@ -58,8 +63,11 @@
                     var enjplist = enjpbox.E_or_J;
                     enjplist.value = "en"
 
-                function generateQuestions(){
-                    
+                    const rsbox = document.getElementById("choices");
+                    var rslist = rsbox.R_or_S;
+                    rslist.value = "review";
+
+                    //dataの読み込み
                     let request = new XMLHttpRequest();
                     request.open('GET', goolgeAPI_URL, false);
                     request.send(null);
@@ -73,35 +81,42 @@
 
                         console.log(startNo);
                         console.log(endNo);
-                        console.log(endNo-startNo+1)
+                        console.log(endNo-startNo+1);
+                    }
 
+                function generateQuestions(){
                         var targetData = [];
-                        for(i = 0; i < 1500; i++){
+                        const enjpbox = document.getElementById("target");
+                        var enjplist = enjpbox.E_or_J;
+                        enjplist.value = "en"
+                        for(i = startNo-1; i < endNo; i++){
                            var a = (data[i]).point;
-                            if(a > 0){
-                                console.log("i = " + i + ", point = " + data[i].point);
-                                targetData.push(data[i]);
-                            }
+                           if( rslist.value === "review" ){
+                                if(a > 0){
+                                    console.log("i = " + i + ", point = " + data[i].point);
+                                    targetData.push(data[i]);
+                                }
+                           } else {
+                              targetData.push(data[i]);
+                           }
                         }
-
-
-                        console.log(targetData)
-                        console.log("<<<<<<<<<<<<<<<<<<<<<<<<<<<")
                         
-                        console.log(targetData)
                         endNo = targetData.length;
-                        endbox.value = endNo;
-                        
+                        if ( rslist.value === "review" ){
+                            endbox.value = endNo;  
+                        } 
+
                         /** 重複チェック用配列 */
                         var randoms = [startNo - 1];
-
+                        startNo = 1;
                         var q = [];
-                        
+                        console.log(n_choices)
                         /** 重複チェックしながら乱数作成 */
-                        for(j = startNo - 1; j <= endNo; j++){
+                        for(j = 0; j < targetData.length; j++){
+                            randoms = [targetData[j].no - 1];
                             for(i = 0; i <= n_choices - 2; i++){
                                 while(true){
-                                    var tmp = intRandom(startNo-1, endNo-1);
+                                    var tmp = intRandom(0, 1499);
                                     if(!randoms.includes(tmp)){
                                         randoms.push(tmp);
                                         break;
@@ -109,39 +124,31 @@
                                 }
                             }
                             q.push(randoms);
-                            randoms = [ j + 1 ];
                         }
                         console.log('????????????????????');
-                        console.log(q.length);
-                    }      
-
-
-
+                        console.log(q);
+                          
 
                     //問題と解答
                     qa = new Array(endNo-startNo+1);
                     
-                    for(i = 0; i <= endNo-startNo; i++){
+                    for(i = 0; i < endNo-startNo+1; i++){
                         //qa[i] = [data[q[i][0]].en, data[q[i][0]].jp, data[q[i][1]].jp, data[q[i][2]].jp, data[q[i][3]].jp, data[q[i][4]].jp,　data[q[i][5]].jp,　data[q[i][6]].jp,　data[q[i][7]].jp,1]
                         qa[i] = new Array(n_choices + 2);
 
                         if( enjplist.value === "en" ){
-                            qa[i][0] = (targetData[q[i][0]].en);
+                            qa[i][0] = data[q[i][0]].en;
                         } else if( enjplist.value === "jp" ){
-                            qa[i][0] = (targetData[q[i][0]].jp);
+                            qa[i][0] = (data[q[i][0]].jp);
                         }
                         for(j = 0; j <= n_choices - 1; j++){
-                            // console.log("++++++++++++++" + "i:" + i + ", j:" + j + ", size:" + q[i].length)
-                            if (i==215) {
-                                console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
-                                console.log(q[i]);
-                            }
                             if( enjplist.value === "en" ){
-                                e = targetData[q[i][j]].jp;
+
+                                e = data[q[i][j]].jp;
                                 qa[i][j + 1] = (e);
 
                             } else if( enjplist.value === "jp" ){
-                                e = datwa[q[i][j]].en;
+                                e = data[q[i][j]].en;
                                 qa[i][j + 1] = (e);
 
                             }
@@ -187,7 +194,7 @@
 
 
                 //クイズの作成
-                generateQuestions();
+                //generateQuestions();
 
                 //初期設定
                 q_sel = n_choices; //選択肢の数
@@ -198,6 +205,8 @@
                     n_choices = parseInt(choicebox.value);
                     q_sel = n_choices;
                     enjplist = enjpbox.E_or_J;
+                    console.log("@!@!@!@!@!@!@!@!@!@!@!@!@!@!@!@!@!@!@!@!@!@!@!@!@!@!@!!@!@!@!@!@!@!@!@!@!@!@")
+                    console.log(n_choices);
 
 
                     generateQuestions();
@@ -208,7 +217,7 @@
 
                     //最初の問題
                     quiz();
-            }
+                }
 
             function wordMasterStart(){
                     setReady();
@@ -222,9 +231,13 @@
 
 
                 //問題表示
+                var start = [];
                 function quiz() {
                     //タイマーのセットアップ
                     var timerId = setTimeout(timeOver, 10000);
+                    start.push( Date.now() );
+
+                　　 /** 始まりの時間を記録 */
 
                     var s, n;
                     //問題
@@ -243,10 +256,18 @@
                     
                 }
 
+                var end = [];
                 //解答表示
                 function anser(num, timerId) {
                     //タイマーをキャンセル
                     clearTimeout(timerId);
+                    end.push( Date.now() );
+
+                    /** 終わりの時間を記録 */
+
+                    // console.log( '実行時間 = ' + (end[i] - start[i]) + 'ミリ秒' );
+
+
                     var s;
                     s = (count + 1) + "問目：";
                     //答え合わせ
@@ -282,10 +303,6 @@
                         }
                         s += "</tr>";
                         s += "</table>";
-                        console.log("!@#$!@#$!@#$!@#$!@#$!@#$!@#$!@#$!@#$")
-                        console.log(ansers)
-                        console.log("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
-                        console.log(ox)
 
                         for (n=0;n<endNo - startNo + 1;n++) {
                             if (ansers[n] == 1) {
@@ -300,14 +317,10 @@
                         //結果をgoogleスプレッドシートに送信
                         var result = []
                         for (i = 0; i < ansers.length; i++){
-                          result.push({"no":qa[i][n_choices + 2], "point":ansers[i]});
+                           //result.push({"no":qa[i][n_choices + 2], "point":ansers[i]});
+                           result.push({"no":qa[i][n_choices + 2], "point":ansers[i], "time":(end[i] - start[i])/1000});
                         }
 
-                       // "     " + "[" + qa[i][n_choices + 2] + "]" + "          " + ansers[i] + "\n"
-
-                        //result = result.slice(0, -1)
-                        console.log("**************")
-                        console.log(result)
                         var xhr = new XMLHttpRequest();
                         xhr.open("POST", goolgeAPI_URL, true);
                         xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
@@ -320,7 +333,7 @@
                         s += "【<a href=''>次の問題に進む</a>】";
                         document.getElementById("text_s").innerHTML = s;
                     }
-            }
+                }
                         
         
         </script>
