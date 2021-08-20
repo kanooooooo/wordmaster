@@ -3,6 +3,14 @@
     <head>
         <meta charset="UTF-8">
         <title>wordMaster</title>
+        <!-- <link rel = "stylesheet" href = "wordmaster.css"> -->
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+        
+        <!-- Bootstrap Javascript(jQuery含む) -->
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
     </head>
     <body>
 
@@ -14,6 +22,8 @@
         <input id = "endNo" type="number" size="10">end</input>
         <input id = "n_choices" type="number" size="10">choices</input>
         <input type="button" onclick="wordMasterStart()" value="START">
+        <!-- <input type="button" onclick="wordMasterStart()" value="START" style="background-color:orange; font-size:15;width:150px;height:30px" onmouseover="this.style.background='gray'" onmouseout="this.style.background='orange'"> -->
+
 
         <form id="target">
             <input name="E_or_J" type="radio" value="en"> 英→日
@@ -36,7 +46,7 @@
         <script type="text/javascript">
 
             //STARTを押してから解答開始
-                const goolgeAPI_URL = 'https://script.google.com/macros/s/AKfycbyhe4IuyJPfbwbMXg4ePH-gAv_BGcCydIVyN6S8T-lxiF3Ume5WmA66wCzA_61TeJomyg/exec'
+                const goolgeAPI_URL = 'https://script.google.com/macros/s/AKfycbygdVrEzZHxb2aAzPWZEYcV2b0TTp6bgsATmfWmA8Fxvi81naYnLgVqz51FeZarYlTe0Q/exec'
                 // let request = new XMLHttpRequest();
                 //     request.open('GET', goolgeAPI_URL, false);
                 //     request.send("numberOfQuizes");
