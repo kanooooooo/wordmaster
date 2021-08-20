@@ -46,307 +46,288 @@
         <script type="text/javascript">
 
             //STARTを押してから解答開始
-                const goolgeAPI_URL = 'https://script.google.com/macros/s/AKfycbygdVrEzZHxb2aAzPWZEYcV2b0TTp6bgsATmfWmA8Fxvi81naYnLgVqz51FeZarYlTe0Q/exec'
-                // let request = new XMLHttpRequest();
-                //     request.open('GET', goolgeAPI_URL, false);
-                //     request.send("numberOfQuizes");
-                //     if (request.status == 200){
-                //         lastNo
+            const goolgeAPI_URL = 'https://script.google.com/macros/s/AKfycbygdVrEzZHxb2aAzPWZEYcV2b0TTp6bgsATmfWmA8Fxvi81naYnLgVqz51FeZarYlTe0Q/exec'
 
+            //問題のスタートとエンドの初期値を設定する
+            const startbox = document.getElementById("startNo");
+            startbox.value = 1;
+　　　　　　　　　 var startNo = parseInt(startbox.value);
 
+            const endbox = document.getElementById("endNo");
+            endbox.value = 1500;
+            var endNo = 1500;  
+                            
+            /** startNoとendNoの設定 */
+            const choicebox = document.getElementById("n_choices");
+            choicebox.value = 8;
+            var  n_choices = parseInt(choicebox.value); 
 
-                    //問題のスタートとエンドの初期値を設定する
-                    const startbox = document.getElementById("startNo");
-                    startbox.value = 1;
-    　　　　　　　　　 var startNo = parseInt(startbox.value);
+            const enjpbox = document.getElementById("target");
+            var enjplist = enjpbox.E_or_J;
+            enjplist.value = "en"
 
-                    const endbox = document.getElementById("endNo");
-                    endbox.value = 1500;
-                    var endNo = 1500;  
-                                    
-                    /** startNoとendNoの設定 */
-                    const choicebox = document.getElementById("n_choices");
-                    choicebox.value = 8;
-                    var  n_choices = parseInt(choicebox.value); 
+            const rsbox = document.getElementById("choices");
+            var rslist = rsbox.R_or_S;
+            rslist.value = "review";
 
-                    const enjpbox = document.getElementById("target");
-                    var enjplist = enjpbox.E_or_J;
-                    enjplist.value = "en"
+            //dataの読み込み
+            let request = new XMLHttpRequest();
+            request.open('GET', goolgeAPI_URL, false);
+            request.send(null);
+            if (request.status == 200){ //正常にウェブサーバーに接続
+                var data = JSON.parse(request.responseText);
+                console.log(data.length);
+                console.log("====================");
+                console.log(data);
+                console.log(startNo);
+                console.log(endNo);
+                console.log(endNo-startNo+1);
+            }
 
-                    const rsbox = document.getElementById("choices");
-                    var rslist = rsbox.R_or_S;
-                    rslist.value = "review";
+            //問題作成する関数
+            function generateQuestions(){
+                var targetData = [];
+                const enjpbox = document.getElementById("target");
+                var enjplist = enjpbox.E_or_J;
+                enjplist.value = "en"
 
-                    //dataの読み込み
-                    let request = new XMLHttpRequest();
-                    request.open('GET', goolgeAPI_URL, false);
-                    request.send(null);
+                for(i = startNo-1; i < endNo; i++){
+                    var a = (data[i]).point;
 
-                    
-                    if (request.status == 200){
-                        var data = JSON.parse(request.responseText);
-                        console.log(data.length);
-                        console.log("====================");
-                        console.log(data);
-
-                        console.log(startNo);
-                        console.log(endNo);
-                        console.log(endNo-startNo+1);
+                    if( rslist.value === "review" ){
+                        if(a > 0){
+                            console.log("i = " + i + ", point = " + data[i].point);
+                            targetData.push(data[i]);
+                        }
+                    }else{
+                        targetData.push(data[i]);
                     }
-
-                function generateQuestions(){
-                        var targetData = [];
-                        const enjpbox = document.getElementById("target");
-                        var enjplist = enjpbox.E_or_J;
-                        enjplist.value = "en"
-                        for(i = startNo-1; i < endNo; i++){
-                           var a = (data[i]).point;
-                           if( rslist.value === "review" ){
-                                if(a > 0){
-                                    console.log("i = " + i + ", point = " + data[i].point);
-                                    targetData.push(data[i]);
-                                }
-                           } else {
-                              targetData.push(data[i]);
-                           }
-                        }
-                        
-                        endNo = targetData.length;
-                        if ( rslist.value === "review" ){
-                            endbox.value = endNo;  
-                        } 
-
-                        /** 重複チェック用配列 */
-                        var randoms = [startNo - 1];
-                        startNo = 1;
-                        var q = [];
-                        console.log(n_choices)
-                        /** 重複チェックしながら乱数作成 */
-                        for(j = 0; j < targetData.length; j++){
-                            randoms = [targetData[j].no - 1];
-                            for(i = 0; i <= n_choices - 2; i++){
-                                while(true){
-                                    var tmp = intRandom(0, 1499);
-                                    if(!randoms.includes(tmp)){
-                                        randoms.push(tmp);
-                                        break;
-                                    }
-                                }
-                            }
-                            q.push(randoms);
-                        }
-                        console.log('????????????????????');
-                        console.log(q);
-                          
-
-                    //問題と解答
-                    qa = new Array(endNo-startNo+1);
-                    
-                    for(i = 0; i < endNo-startNo+1; i++){
-                        //qa[i] = [data[q[i][0]].en, data[q[i][0]].jp, data[q[i][1]].jp, data[q[i][2]].jp, data[q[i][3]].jp, data[q[i][4]].jp,　data[q[i][5]].jp,　data[q[i][6]].jp,　data[q[i][7]].jp,1]
-                        qa[i] = new Array(n_choices + 2);
-
-                        if( enjplist.value === "en" ){
-                            qa[i][0] = data[q[i][0]].en;
-                        } else if( enjplist.value === "jp" ){
-                            qa[i][0] = (data[q[i][0]].jp);
-                        }
-                        for(j = 0; j <= n_choices - 1; j++){
-                            if( enjplist.value === "en" ){
-
-                                e = data[q[i][j]].jp;
-                                qa[i][j + 1] = (e);
-
-                            } else if( enjplist.value === "jp" ){
-                                e = data[q[i][j]].en;
-                                qa[i][j + 1] = (e);
-
-                            }
-                        }
-                        qa[i][n_choices + 1] = 1; //正解の番号を入れる
-
-                        qa[i][n_choices + 2] = targetData[i].no;
-
-                        var ansNo = intRandom(1, n_choices);
-                        qa[i][n_choices + 1] = ansNo;
-                        var temp = qa[i][ansNo]; //入れ替える場所の選択肢を一旦保存
-                        qa[i][ansNo] = qa[i][1];
-                        qa[i][1] = temp;
-
-
-                    }
-                    console.log("///////////////////////////")
-                    console.log(qa)
-
                 }
+                
+                endNo = targetData.length;
+                if ( rslist.value === "review" ){
+                    endbox.value = endNo;  
+                } 
 
-                /** startNo以上endNo以下の整数値の乱数を返す */
-                function intRandom(startNo, endNo){
-                            return Math.floor( Math.random() * (endNo - startNo + 1)) + startNo;
-                 }
+                /** 重複チェック用配列 */
+                var randoms = [startNo - 1];
+                startNo = 1;
+                var q = [];//問題と選択肢の番号をまとめた配列
+                console.log(n_choices)
 
-                //英単語読み上げるための設定
+                /** 重複チェックしながら乱数作成 */
+                for(j = 0; j < targetData.length; j++){
+                    randoms = [targetData[j].no - 1];
+                    for(i = 0; i <= n_choices - 2; i++){
+                        while(true){
+                            var tmp = intRandom(0, 1499);
+                            if(!randoms.includes(tmp)){
+                                randoms.push(tmp);
+                                break;
+                            }
+                        }
+                    }
+                    q.push(randoms);
+                }
+                console.log('????????????????????');
+                console.log(q);
+                        
+                //問題と解答
+                qa = new Array(endNo-startNo+1);
+
+                for(i = 0; i < endNo-startNo+1; i++){
+                    //qa[i] = [data[q[i][0]].en, data[q[i][0]].jp, data[q[i][1]].jp, data[q[i][2]].jp, data[q[i][3]].jp, data[q[i][4]].jp,　data[q[i][5]].jp,　data[q[i][6]].jp,　data[q[i][7]].jp,1]
+                    qa[i] = new Array(n_choices + 2);
+
+                    //問題の作成
+                    if( enjplist.value === "en" ){
+                        qa[i][0] = data[q[i][0]].en;
+                    }else if( enjplist.value === "jp" ){
+                        qa[i][0] = (data[q[i][0]].jp);
+                    }
+
+                    //選択肢の作成
+                    for(j = 0; j <= n_choices - 1; j++){
+                        if( enjplist.value === "en" ){
+                            e = data[q[i][j]].jp;
+                            qa[i][j + 1] = (e);
+                        }else if( enjplist.value === "jp" ){
+                            e = data[q[i][j]].en;
+                            qa[i][j + 1] = (e);
+                        }
+                    }
+
+                    //スプレッドシート上の単語番号を配列の一番最後に入れる
+                    qa[i][n_choices + 2] = targetData[i].no;
+
+                    //正解の場所を乱数で決定
+                    qa[i][n_choices + 1] = 1; //正解の番号を入れる
+                    var ansNo = intRandom(1, n_choices);
+                    qa[i][n_choices + 1] = ansNo;
+                    var temp = qa[i][ansNo]; //入れ替える場所の選択肢を一旦保存
+                    qa[i][ansNo] = qa[i][1];
+                    qa[i][1] = temp;
+                }
+                console.log("///////////////////////////")
+                console.log(qa)
+            }
+
+            /** startNo以上endNo以下の整数値の乱数を返す */
+            function intRandom(startNo, endNo){
+                return Math.floor( Math.random() * (endNo - startNo + 1)) + startNo;
+        　　}
+
+            //英単語読み上げる関数
+            function speak(word) {
                 var synthes = new SpeechSynthesisUtterance();
                 var voices = window.speechSynthesis.getVoices();
-                console.log(voices)
-                function speak(word) {
-                    for (var i = 0; i < voices.length; i++){
-                        if (voices[i].name == 'Alex') {
-                            synthes.voice = voices[i];
-                        }
+                for (var i = 0; i < voices.length; i++){
+                    if (voices[i].name == 'Alex') {
+                        synthes.voice = voices[i];
                     }
-                    synthes.volume = 1;
-                    synthes.text = word;
-                    synthes.lang = 'en-US';
-                    speechSynthesis.speak(synthes);
                 }
-
-
-
-                //クイズの作成
-                //generateQuestions();
-
-                //初期設定
-                q_sel = n_choices; //選択肢の数
-
-                function setReady() {
-                    startNo = parseInt(startbox.value);
-                    endNo = parseInt(endbox.value);
-                    n_choices = parseInt(choicebox.value);
-                    q_sel = n_choices;
-                    enjplist = enjpbox.E_or_J;
-                    console.log("@!@!@!@!@!@!@!@!@!@!@!@!@!@!@!@!@!@!@!@!@!@!@!@!@!@!@!!@!@!@!@!@!@!@!@!@!@!@")
-                    console.log(n_choices);
-
-
-                    generateQuestions();
-
-                    count = 0; //問題番号
-                    ansers = new Array(); //解答記録
-                    ox = new Array(); //解答記録(O, X表示)
-
-                    //最初の問題
-                    quiz();
-                }
-
-            function wordMasterStart(){
-                    setReady();
+                synthes.volume = 1;
+                synthes.text = word;
+                synthes.lang = 'en-US';
+                speechSynthesis.speak(synthes);
             }
-                
 
+            //初期設定
+            q_sel = n_choices; //選択肢の数
+
+            //テスト開始
+            function setReady() {
+                startNo = parseInt(startbox.value);
+                endNo = parseInt(endbox.value);
+                n_choices = parseInt(choicebox.value);
+                q_sel = n_choices;
+                enjplist = enjpbox.E_or_J;
+                console.log("@!@!@!@!@!@!@!@!@!@!@!@!@!@!@!@!@!@!@!@!@!@!@!@!@!@!@!!@!@!@!@!@!@!@!@!@!@!@")
+                console.log(n_choices);
+
+                //クイズ作成
+                generateQuestions();
+
+                count = 0; //問題番号
+                ansers = new Array(); //解答記録
+                ox = new Array(); //解答記録(O, X表示)
+
+                //最初の問題
+                quiz();
+            }
+
+            //スタートボタンが押された時
+            function wordMasterStart(){
+                setReady();
+            }
+
+            //タイマーが時間切れになった時
             function timeOver(){
                 anser(0, -1);
-
             }
 
+            //問題表示
+            var start = []; //出題する単語を表示した時間の配列
+            function quiz() {
+                //タイマーのセットアップ
+                var timerId = setTimeout(timeOver, 10000);
+                start.push(Date.now());
 
-                //問題表示
-                var start = [];
-                function quiz() {
-                    //タイマーのセットアップ
-                    var timerId = setTimeout(timeOver, 10000);
-                    start.push( Date.now() );
+                var s, n;
 
-                　　 /** 始まりの時間を記録 */
+                //問題
+                document.getElementById("text_q").innerHTML = (count + 1) + "問目(" + (startNo + count) + "番目)：" + qa[count][0];
 
-                    var s, n;
-                    //問題
-                    document.getElementById("text_q").innerHTML = (count + 1) + "問目(" + (startNo + count) + "番目)：" + qa[count][0];
-                    //選択肢
-                    s = "";
-                    for (n=1;n<=q_sel;n++) {
+                //選択肢
+                s = "";
+                for (n=1;n<=q_sel;n++) {
                     s += "【<a href='javascript:anser(" + n +  "," + timerId + ")'>" + n + "：" + qa[count][n] + "</a>】";
-                    }
-                    document.getElementById("text_s").innerHTML = s;
-
-                    if( enjplist.value === "en" ){
-                       speak(qa[count][0]);  
-                    }
-
-                    
                 }
 
-                var end = [];
-                //解答表示
-                function anser(num, timerId) {
-                    //タイマーをキャンセル
-                    clearTimeout(timerId);
-                    end.push( Date.now() );
+                document.getElementById("text_s").innerHTML = s;
 
-                    /** 終わりの時間を記録 */
+                //英語の時だけ読み上げ
+                if( enjplist.value === "en" ){
+                    speak(qa[count][0]);  
+                }                
+            }
 
-                    // console.log( '実行時間 = ' + (end[i] - start[i]) + 'ミリ秒' );
+            var end = []; //回答した時間の配列
 
+            //解答表示
+            function anser(num, timerId) {
+                //タイマーをキャンセル
+                clearTimeout(timerId);
+                end.push(Date.now());
 
-                    var s;
-                    s = (count + 1) + "問目：";
-                    //答え合わせ
-                    if (num == qa[count][q_sel + 1]) {
-                        //正解
-                        s += "-1" + qa[count][num];
-                        ansers[count] = "-1";
-                        ox[count] = "○";
-                    } else {
-                        s += "1" + qa[count][num];
-                        ansers[count] = "1";
-                        ox[count] = "X";
-                    }
-                    document.getElementById("text_a").innerHTML = s;
+                var s;
+                s = (count + 1) + "問目：";
 
-                    //次の問題を表示
-                    count++;
-                    if (count < endNo - startNo + 1) {
-                        quiz();
-                    } else {
-                        //終了
-                        s = "<table border='2'><caption>成績発表</caption>";
-                        //1行目
-                        s += "<tr><th>問題</th>";
-                        for (n=0;n<endNo - startNo + 1;n++) {
+                //答え合わせ
+                if (num == qa[count][q_sel + 1]) {
+                    //正解
+                    s += "-1" + qa[count][num];
+                    ansers[count] = "-1";
+                    ox[count] = "○";
+                } else {
+                    s += "1" + qa[count][num];
+                    ansers[count] = "1";
+                    ox[count] = "X";
+                }
+
+                document.getElementById("text_a").innerHTML = s;
+
+                //次の問題を表示
+                count++;
+                if (count < endNo - startNo + 1) {
+                    quiz();
+                } else {
+                    //終了
+                    s = "<table border='2'><caption>成績発表</caption>";
+
+                    //1行目
+                    s += "<tr><th>問題</th>";
+                    for (n=0;n<endNo - startNo + 1;n++) {
                         s += "<th>" + (n+1) + "</th>";
-                        }
-                        s += "</tr>";
-                        //2行目
-                        s += "<tr><th>成績</th>";
-                        for (n=0;n<endNo - startNo + 1;n++) {
-                        s += "<td>" + ox[n] + "</td>";
-                        }
-                        s += "</tr>";
-                        s += "</table>";
-
-                        for (n=0;n<endNo - startNo + 1;n++) {
-                            if (ansers[n] == 1) {
-                                s += "<p>" + "(" + (n+1) + ") " + "[" + qa[n][n_choices + 2] + "]" + qa[n][0] + "|" + qa[n][ qa[n][n_choices + 1] ] + "</p>";
-                            }
-
-                        }
-                        
-                        document.getElementById("text_q").innerHTML = s;
-
-
-                        //結果をgoogleスプレッドシートに送信
-                        var result = []
-                        for (i = 0; i < ansers.length; i++){
-                           //result.push({"no":qa[i][n_choices + 2], "point":ansers[i]});
-                           result.push({"no":qa[i][n_choices + 2], "point":ansers[i], "time":(end[i] - start[i])/1000});
-                        }
-
-                        var xhr = new XMLHttpRequest();
-                        xhr.open("POST", goolgeAPI_URL, true);
-                        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-                        xhr.send(JSON.stringify({"startNo":startNo, "endNo":endNo, "result":result}));
-
-
-                        //次の選択肢
-                        s = "【<a href='javascript:history.back()'>前のページに戻る</a>】";
-                        s += "【<a href='javascript:setReady()'>テストをやり直す</a>】";
-                        s += "【<a href=''>次の問題に進む</a>】";
-                        document.getElementById("text_s").innerHTML = s;
                     }
-                }
-                        
-        
-        </script>
+                    s += "</tr>";
 
+                    //2行目
+                    s += "<tr><th>成績</th>";
+                    for (n=0;n<endNo - startNo + 1;n++) {
+                        s += "<td>" + ox[n] + "</td>";
+                    }
+
+                    s += "</tr>";
+                    s += "</table>";
+
+                    //間違えた単語のリスト表示
+                    for (n=0;n<endNo - startNo + 1;n++) {
+                        if (ansers[n] == 1) {
+                            s += "<p>" + "(" + (n+1) + ") " + "[" + qa[n][n_choices + 2] + "]" + qa[n][0] + "|" + qa[n][ qa[n][n_choices + 1] ] + "</p>";
+                        }
+                    }
+                    
+                    document.getElementById("text_q").innerHTML = s;
+
+                    //結果をgoogleスプレッドシートに送信
+                    var result = []
+                    for (i = 0; i < ansers.length; i++){
+                        result.push({"no":qa[i][n_choices + 2], "point":ansers[i], "time":(end[i] - start[i])/1000});
+                    }
+
+                    var xhr = new XMLHttpRequest();
+                    xhr.open("POST", goolgeAPI_URL, true);
+                    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                    xhr.send(JSON.stringify({"startNo":startNo, "endNo":endNo, "result":result}));
+
+                    //次の選択肢
+                    s = "【<a href='javascript:history.back()'>前のページに戻る</a>】";
+                    s += "【<a href='javascript:setReady()'>テストをやり直す</a>】";
+                    s += "【<a href=''>次の問題に進む</a>】";
+                    document.getElementById("text_s").innerHTML = s;
+                }
+            }        
+        </script>
     </body>
 </html>
