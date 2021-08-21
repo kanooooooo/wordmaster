@@ -61,11 +61,11 @@ function doPost(e) {
   //適切なところにpointを入れる
   var result = params.result;
   for(i = 0; i<result.length; i++){
-    sheet.getRange(result[i].no, 6).setValue([result[i].point]);
+    sheet.getRange(result[i].no, 6).setValue([result[i].point]);　 //F列
   }
 
   //かかった時間を入れる
-    var result = params.result;
+  var result = params.result;
   for(i = 0; i<result.length; i++){
     sheet.getRange(result[i].no, 7).setValue([result[i].time]);
   }
@@ -79,9 +79,10 @@ function doPost(e) {
   var results = [];
   for(let i=0; i<lastRow; i++){
     var update = parseInt(data_e[i]) + parseInt(data_f[i]);　//E列 + F列
-    if(update > 3){
+    if(update > 3 || parseInt(data_f[i]) == 1){ //間違えたら3に戻す
       update = 3;
     }
+
     if(!isNaN(update)){
       results.push([update]);
     } else {

@@ -21,7 +21,7 @@
         <input id = "startNo" type="number" size="10">start</input>
         <input id = "endNo" type="number" size="10">end</input>
         <input id = "n_choices" type="number" size="10">choices</input>
-        <input type="button" onclick="wordMasterStart()" value="START">
+        <input type="button" class="btn btn-primary" onclick="wordMasterStart()" value="START">
         <!-- <input type="button" onclick="wordMasterStart()" value="START" style="background-color:orange; font-size:15;width:150px;height:30px" onmouseover="this.style.background='gray'" onmouseout="this.style.background='orange'"> -->
 
 
@@ -46,7 +46,7 @@
         <script type="text/javascript">
 
             //STARTを押してから解答開始
-            const goolgeAPI_URL = 'https://script.google.com/macros/s/AKfycbygdVrEzZHxb2aAzPWZEYcV2b0TTp6bgsATmfWmA8Fxvi81naYnLgVqz51FeZarYlTe0Q/exec'
+            const goolgeAPI_URL = 'https://script.google.com/macros/s/AKfycbxS1gsnLIGmYyRHhSqCoBIXZc1IH_Td-Z0VuPVZfhILOjAVDsM-TveAnJ5hFlDVD_FKTg/exec'
 
             //問題のスタートとエンドの初期値を設定する
             const startbox = document.getElementById("startNo");
@@ -54,8 +54,8 @@
 　　　　　　　　　 var startNo = parseInt(startbox.value);
 
             const endbox = document.getElementById("endNo");
-            endbox.value = 1500;
-            var endNo = 1500;  
+            endbox.value = 520;
+            var endNo = 520;  
                             
             /** startNoとendNoの設定 */
             const choicebox = document.getElementById("n_choices");
@@ -87,13 +87,16 @@
             //問題作成する関数
             function generateQuestions(){
                 var targetData = [];
-                const enjpbox = document.getElementById("target");
-                var enjplist = enjpbox.E_or_J;
-                enjplist.value = "en"
+                // const enjpbox = document.getElementById("target");
+                // var enjplist = enjpbox.E_or_J;
+                // enjplist.value = "en"
 
                 for(i = startNo-1; i < endNo; i++){
                     var a = (data[i]).point;
 
+                    console.log("iiiiiiiiiiiiiiiiiiiiiiiiiii")
+                    console.log(i)
+                   // console.log(data[i])
                     if( rslist.value === "review" ){
                         if(a > 0){
                             console.log("i = " + i + ", point = " + data[i].point);
@@ -103,6 +106,8 @@
                         targetData.push(data[i]);
                     }
                 }
+                console.log("ttttttttttttttttttttttttttaaaaaaaaaaaaaaarrrrrrrrrrrrr")
+                console.log(targetData)
                 
                 endNo = targetData.length;
                 if ( rslist.value === "review" ){
@@ -120,7 +125,7 @@
                     randoms = [targetData[j].no - 1];
                     for(i = 0; i <= n_choices - 2; i++){
                         while(true){
-                            var tmp = intRandom(0, 1499);
+                            var tmp = intRandom(0, 519);
                             if(!randoms.includes(tmp)){
                                 randoms.push(tmp);
                                 break;
@@ -143,17 +148,20 @@
                     if( enjplist.value === "en" ){
                         qa[i][0] = data[q[i][0]].en;
                     }else if( enjplist.value === "jp" ){
-                        qa[i][0] = (data[q[i][0]].jp);
+                        qa[i][0] = data[q[i][0]].jp;
                     }
-
                     //選択肢の作成
                     for(j = 0; j <= n_choices - 1; j++){
                         if( enjplist.value === "en" ){
+                            console.log("///////////////////////////")
+                            console.log("i="+i+", j="+j);
+                            console.log(q);
+                            console.log(q[i][j]);
                             e = data[q[i][j]].jp;
                             qa[i][j + 1] = (e);
                         }else if( enjplist.value === "jp" ){
-                            e = data[q[i][j]].en;
-                            qa[i][j + 1] = (e);
+                            l = data[q[i][j]].en;
+                            qa[i][j + 1] = (l);
                         }
                     }
 
