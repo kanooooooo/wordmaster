@@ -49,10 +49,10 @@
             let data = "";
 
             //word数
-            let numberOfWords = 1680;
+            let numberOfWords = 1760;
 
             //STARTを押してから解答開始
-            const goolgeAPI_URL = 'https://script.google.com/macros/s/AKfycbybYg2MOp4aHp48X83Lq0nlzoDlNawotxxbfMhmoFUD7mZwBi4eE9SqRd5bUivRAt3jAQ/exec'
+            const goolgeAPI_URL = 'https://script.google.com/macros/s/AKfycbwm8a7ju6rgyCDt-0HsT93KgMtrY42r-da72-F4CVpCPPVQF-MYnr_bgZlyjPcwVnZ8cw/exec'
             
             //問題のスタートとエンドの初期値を設定する
             const startbox = document.getElementById("startNo");
@@ -308,33 +308,6 @@
                 if (count < endNo - startNo + 1) {
                     quiz();
                 } else {
-                    // //終了
-                    s = "<table border='2'><caption>成績発表</caption>";
-                    //1行目
-                    s += "<tr><th>問題</th>";
-                    for (n=0;n<endNo - startNo + 1;n++) {
-                    s += "<th>" + (n+1) + "</th>";
-                    }
-                    s += "</tr>";
-                    //2行目
-                    s += "<tr><th>成績</th>";
-                    for (n=0;n<endNo - startNo + 1;n++) {
-                    s += "<td>" + ox[n] + "</td>";
-                    }
-                    s += "</tr>";
-                    s += "</table>";
-
-                    //終了
-                    // s = "<table class='table'>";
-                    //     s += "<thead>" + "<th scope='col'>問題</th>" + "<tr scope='col'>成績</tr>" + "</thead>";
-                    //     for (n=0;n<endNo - startNo + 1;n++) {
-                    //         s += "<tbody>"
-                    //             s += "<th>" + (n+1) + "</th>";
-                    //             s += "<tr>" + ox[n] + "</tr>";
-                    //         s += "</tbody>";
-                    //     }
-                    // s += "</table>";
-
                     //結果をgoogleスプレッドシートに送信
                     var result = [];
                     for (i = 0; i < ansers.length; i++){
@@ -372,40 +345,60 @@
                         var update = {"no":qa[i][n_choices + 2], "pt":pt, "good":good, "bad":bad, "count":counts, "total":total, "error":error, "time":time, "slog":slog}
                         result.push(update);
                     }
-                
 
+                    //終了
+                    s = "<table border='2'><caption>成績発表</caption>";
+                    //1行目
+                    s += "<tr><th>問題</th>";
+                    for (n=0;n<endNo - startNo + 1;n++) {
+                    s += "<th>" + (n+1) + "</th>";
+                    }
+                    s += "</tr>";
+                    //2行目
+                    s += "<tr><th>成績</th>";
+                    for (n=0;n<endNo - startNo + 1;n++) {
+                    s += "<td>" + ox[n] + "</td>";
+                    }
+                    s += "</tr>";
+                    s += "</table>";
+                    
+                
                     //間違えた単語のリスト表示
+                    var errorCount = 0;
                     var date = new Date();
                     s += "<table class='table'>"
                         s += new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toJSON()
                         s += "<thead>" + "<th scope='col'>問題番号</th>" + "<th scope='col'>単語番号</th>" + "<th scope='col'>単語</th>" + "<th scope='col'>意味</th>" + "<th scope='col'>エラー率</th>" + "<th scope='col'>履歴</th>" + "</thead>";
                         for (n=0;n<endNo - startNo + 1;n++) {
                             if (ansers[n] == 1) {
+                                errorCount++;
                                 s += "<tbody>"
                                     s += "<tr>"
                                         var error = result[n].error;
                                         if(error >= 75){
-                                            s += "<td class='table-danger'>" + (n+1) + "</td>";
+                                            s += "<td class='table-danger'>" + (n + 1) + "</td>";
                                             s += "<td class='table-danger'>" + qa[n][n_choices + 2] + "</td>";
                                         }else if(error <75 && error >=50){
-                                            s += "<td class='table-warning'>" + (n+1) + "</td>";
+                                            s += "<td class='table-warning'>" + (n + 1) + "</td>";
                                             s += "<td class='table-warning'>" + qa[n][n_choices + 2] + "</td>";
                                         }else if(error <50 && error >=30){
-                                            s += "<td class='table-info'>" + (n+1) + "</td>";
+                                            s += "<td class='table-info'>" + (n + 1) + "</td>";
                                             s += "<td class='table-info'>" + qa[n][n_choices + 2] + "</td>";
                                         }else{
-                                            s += "<td class='table-light'>" + (n+1) + "</td>";
-                                            s += "<td class='table-light'>" + qa[n][n_choices + 2] + "</td>";
+                                            s += "<td class='table-secondary'>" + (n + 1) + "</td>";
+                                            s += "<td class='table-secondary'>" + qa[n][n_choices + 2] + "</td>";
                                         }
                                         s += "<td>" + qa[n][0] + "</td>";
                                         s += "<td>" + qa[n][ qa[n][n_choices + 1] ] + "</td>";
-                                        s += "<td>" + result[n].error + "</td>";
+                                        s += "<td>" + result[n].error + "%" + "</td>";
                                         s += "<td>" + convert2ox(result[n].slog).slice(0, 20) + "</td>";
                                     s += "</tr>";
                                 s += "</tbody>";
                             }
                         }
                     s += "</table>";
+                    s += "誤答数: " + errorCount;
+                    s += "<p>";
 
                     document.getElementById("text_q").innerHTML = s;
 
