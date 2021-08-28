@@ -22,7 +22,6 @@
         <input id = "endNo" type="number" size="10">end</input>
         <input id = "n_choices" type="number" size="10">choices</input>
         <input type="button" class="btn btn-primary" onclick="wordMasterStart()" value="START">
-        <input id = "analyze" type="button" class="btn btn-primary" onclick="analyze()" onMouseOver="danger()" onMouseOut="normal()" value="Analyze">
 
         <!-- <input type="button" onclick="wordMasterStart()" value="START" style="background-color:orange; font-size:15;width:150px;height:30px" onmouseover="this.style.background='gray'" onmouseout="this.style.background='orange'"> -->
 
@@ -309,24 +308,32 @@
                 if (count < endNo - startNo + 1) {
                     quiz();
                 } else {
-                    //終了
+                    // //終了
                     s = "<table border='2'><caption>成績発表</caption>";
-
                     //1行目
                     s += "<tr><th>問題</th>";
                     for (n=0;n<endNo - startNo + 1;n++) {
-                        s += "<th>" + (n+1) + "</th>";
+                    s += "<th>" + (n+1) + "</th>";
                     }
                     s += "</tr>";
-
                     //2行目
                     s += "<tr><th>成績</th>";
                     for (n=0;n<endNo - startNo + 1;n++) {
-                        s += "<td>" + ox[n] + "</td>";
+                    s += "<td>" + ox[n] + "</td>";
                     }
-
                     s += "</tr>";
                     s += "</table>";
+
+                    //終了
+                    // s = "<table class='table'>";
+                    //     s += "<thead>" + "<th scope='col'>問題</th>" + "<tr scope='col'>成績</tr>" + "</thead>";
+                    //     for (n=0;n<endNo - startNo + 1;n++) {
+                    //         s += "<tbody>"
+                    //             s += "<th>" + (n+1) + "</th>";
+                    //             s += "<tr>" + ox[n] + "</tr>";
+                    //         s += "</tbody>";
+                    //     }
+                    // s += "</table>";
 
                     //結果をgoogleスプレッドシートに送信
                     var result = [];
@@ -365,14 +372,41 @@
                         var update = {"no":qa[i][n_choices + 2], "pt":pt, "good":good, "bad":bad, "count":counts, "total":total, "error":error, "time":time, "slog":slog}
                         result.push(update);
                     }
+                
 
                     //間違えた単語のリスト表示
-                    for (n=0;n<endNo - startNo + 1;n++) {
-                        if (ansers[n] == 1) {
-                            s += "<p>" + "(" + (n+1) + ") " + "[" + qa[n][n_choices + 2] + "]" + qa[n][0] + "|" + qa[n][ qa[n][n_choices + 1] ] + "</p>";
+                    var date = new Date();
+                    s += "<table class='table'>"
+                        s += new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toJSON()
+                        s += "<thead>" + "<th scope='col'>問題番号</th>" + "<th scope='col'>単語番号</th>" + "<th scope='col'>単語</th>" + "<th scope='col'>意味</th>" + "<th scope='col'>エラー率</th>" + "<th scope='col'>履歴</th>" + "</thead>";
+                        for (n=0;n<endNo - startNo + 1;n++) {
+                            if (ansers[n] == 1) {
+                                s += "<tbody>"
+                                    s += "<tr>"
+                                        var error = result[n].error;
+                                        if(error >= 75){
+                                            s += "<td class='table-danger'>" + (n+1) + "</td>";
+                                            s += "<td class='table-danger'>" + qa[n][n_choices + 2] + "</td>";
+                                        }else if(error <75 && error >=50){
+                                            s += "<td class='table-warning'>" + (n+1) + "</td>";
+                                            s += "<td class='table-warning'>" + qa[n][n_choices + 2] + "</td>";
+                                        }else if(error <50 && error >=30){
+                                            s += "<td class='table-info'>" + (n+1) + "</td>";
+                                            s += "<td class='table-info'>" + qa[n][n_choices + 2] + "</td>";
+                                        }else{
+                                            s += "<td class='table-light'>" + (n+1) + "</td>";
+                                            s += "<td class='table-light'>" + qa[n][n_choices + 2] + "</td>";
+                                        }
+                                        s += "<td>" + qa[n][0] + "</td>";
+                                        s += "<td>" + qa[n][ qa[n][n_choices + 1] ] + "</td>";
+                                        s += "<td>" + result[n].error + "</td>";
+                                        s += "<td>" + convert2ox(result[n].slog).slice(0, 20) + "</td>";
+                                    s += "</tr>";
+                                s += "</tbody>";
+                            }
                         }
-                    }
-                    
+                    s += "</table>";
+
                     document.getElementById("text_q").innerHTML = s;
 
                     console.log(".................................")
@@ -389,7 +423,20 @@
                     s += "【<a href=''>次の問題に進む</a>】";
                     document.getElementById("text_s").innerHTML = s;
                 }
-            }        
+            } 
+            
+            
+         function  convert2ox(log){
+             let result = "";
+             for(i = 0; i < log.length; i++){
+                if(log[i] == -1){
+                    result += "o"
+                }else{
+                    result += "x"
+                }
+            }
+            return result;
+         }
         </script>
     </body>
 </html>
