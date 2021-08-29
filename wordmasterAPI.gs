@@ -21,6 +21,17 @@ function doGet(e) {
     return response;
   }
 
+  if(e.parameter.choice == "lastRow"){
+    // シートを取得
+    var sheet = getSheet(sheet_name);
+    // シートの最終行を取得
+    var lastRow = sheet.getLastRow();
+
+    response.setMimeType(MimeType.TEXT);
+    response.setContent(lastRow);
+    return response;
+  }
+
   const data = getData();
   response.setMimeType(MimeType.JSON);
   response.setContent(JSON.stringify(data));
@@ -34,6 +45,12 @@ function setValue(analyzedData, cell, start, end) {
   }
 }
 
+function test01() {
+  // シートを取得
+  var sheet = getSheet('dashboard');
+  //　書き込みテスト
+  const range = sheet.getRange('A1:A1').setValue("XXXX!!!!");
+}
 
 function test02(){
   var c = {"startNo":1,
