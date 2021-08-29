@@ -48,12 +48,20 @@
             //Data
             let data = "";
 
-            //word数
-            let numberOfWords = 1760;
-
             //STARTを押してから解答開始
-            const goolgeAPI_URL = 'https://script.google.com/macros/s/AKfycbwm8a7ju6rgyCDt-0HsT93KgMtrY42r-da72-F4CVpCPPVQF-MYnr_bgZlyjPcwVnZ8cw/exec'
+            const goolgeAPI_URL = 'https://script.google.com/macros/s/AKfycbxEoQdEN8BbANsSEHFdL4VddxCvPblOr0zZWYeILnAsBIkyVEV8sHBpgVpPF_eoiRKA/exec'
             
+            //word数の読み込み
+            let numberOfWords = 0;
+            let request = new XMLHttpRequest();
+            request.open('GET', goolgeAPI_URL+"?choice=lastRow", false);
+            request.send(null);
+            if (request.status == 200){ //正常にウェブサーバーに接続
+                var lastRow = JSON.parse(request.responseText);
+                //console.log(lastRow);
+                numberOfWords = lastRow;
+            }
+
             //問題のスタートとエンドの初期値を設定する
             const startbox = document.getElementById("startNo");
             startbox.value = 1;
