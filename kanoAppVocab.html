@@ -23,8 +23,6 @@
         <input id = "n_choices" type="number" size="10">choices</input>
         <input type="button" class="btn btn-primary" onclick="wordMasterStart()" value="START">
 
-        <!-- <input type="button" onclick="wordMasterStart()" value="START" style="background-color:orange; font-size:15;width:150px;height:30px" onmouseover="this.style.background='gray'" onmouseout="this.style.background='orange'"> -->
-
 
         <form id="target">
             <input name="E_or_J" type="radio" value="en"> 英→日
@@ -49,7 +47,7 @@
             let data = "";
 
             //STARTを押してから解答開始
-            const goolgeAPI_URL = 'https://script.google.com/macros/s/AKfycbxEoQdEN8BbANsSEHFdL4VddxCvPblOr0zZWYeILnAsBIkyVEV8sHBpgVpPF_eoiRKA/exec'
+            const goolgeAPI_URL = 'https://script.google.com/macros/s/AKfycbyMoq9B5YX6NtcgTTH3QkhIrsZ5p8nS9xAbXQUm9MY41EZNfsp64xoKwqJVKNSi96r89A/exec'
             
             //word数の読み込み
             let numberOfWords = 0;
@@ -87,16 +85,10 @@
             //問題作成する関数
             function generateQuestions(){
                 var targetData = [];
-                // const enjpbox = document.getElementById("target");
-                // var enjplist = enjpbox.E_or_J;
-                // enjplist.value = "en"  
 
                 for(i = startNo-1; i < endNo; i++){
                     let pt = (data[i]).digest.pt;
 
-                    //console.log("iiiiiiiiiiiiiiiiiiiiiiiiiii")
-                    //console.log(i)
-                    //console.log(data[i])
                     if( rslist.value === "review" ){
                         if(pt > 0){
                             //console.log("i = " + i + ", point = " + data[i].digest.pt);
@@ -106,7 +98,7 @@
                         targetData.push(data[i]);
                     }
                 }
-                console.log("ttttttttttttttttttttttttttaaaaaaaaaaaaaaarrrrrrrrrrrrr")
+                console.log("ttttttaaaaaaaaaarrrrrrrr")
                 console.log(targetData)
                 
                 endNo = targetData.length;
@@ -141,7 +133,6 @@
                 qa = new Array(endNo-startNo+1);
 
                 for(i = 0; i < endNo-startNo+1; i++){
-                    //qa[i] = [data[q[i][0]].en, data[q[i][0]].jp, data[q[i][1]].jp, data[q[i][2]].jp, data[q[i][3]].jp, data[q[i][4]].jp,　data[q[i][5]].jp,　data[q[i][6]].jp,　data[q[i][7]].jp,1]
                     qa[i] = new Array(n_choices + 2);
 
                     //問題の作成
@@ -153,10 +144,6 @@
                     //選択肢の作成
                     for(j = 0; j <= n_choices - 1; j++){
                         if( enjplist.value === "en" ){
-                            //console.log("///////////////////////////")
-                            //console.log("i="+i+", j="+j);
-                            //console.log(q);
-                            //console.log(q[i][j]);
                             e = data[q[i][j]].jp;
                             qa[i][j + 1] = (e);
                         }else if( enjplist.value === "jp" ){
@@ -190,12 +177,7 @@
                     console.log(data.length);
                     console.log("====================");
                     console.log(data);
-                    console.log(startNo);
-                    console.log(endNo);
-                    console.log(endNo-startNo+1);
                 } else {
-                    console.log("=======000000000=======");
-                    console.log(request.status)
                 }
             }
 
@@ -279,6 +261,7 @@
 
                 //英語の時だけ読み上げ
                 if( enjplist.value === "en" ){
+                    window.speechSynthesis.cancel(); //話す前にキャンセル
                     speak(qa[count][0]);  
                 }                
             }
@@ -300,16 +283,20 @@
                 console.log(count);
                 if (num == qa[count][q_sel + 1]) {
                     //正解
-                    s += "-1" + qa[count][num];
+                    s += "-1";
                     ansers[count] = "-1";
                     ox[count] = "○";
                 } else {
-                    s += "1" + qa[count][num];
+                    s += "1";
                     ansers[count] = "1";
                     ox[count] = "X";
                 }
 
-                document.getElementById("text_a").innerHTML = s;
+                if( enjplist.value === "jp" ){
+                    window.speechSynthesis.cancel(); //話す前にキャンセル
+                    speak(qa[count][ qa[count][n_choices + 1] ]);  
+                } 
+                document.getElementById("text_a").innerHTML = s + qa[count][ qa[count][n_choices + 1] ];
 
                 //次の問題を表示
                 count++;
